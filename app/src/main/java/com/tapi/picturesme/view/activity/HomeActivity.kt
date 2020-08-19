@@ -4,10 +4,12 @@ package com.tapi.picturesme.view.activity
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import com.tapi.picturesme.R
-import com.tapi.picturesme.function.HomeViewModel
+import com.tapi.picturesme.model.PhotoItem
+import com.tapi.picturesme.viewmodel.HomeViewModel
 import com.tapi.picturesme.view.base.BaseActivity
 import com.tapi.picturesme.view.base.BaseFragment
-import com.tapi.picturesme.view.fragment.M001Frg
+import com.tapi.picturesme.view.fragment.M000Splash
+import com.tapi.picturesme.view.fragment.M001HomeFrg
 
 class HomeActivity : BaseActivity<HomeViewModel>(), View.OnClickListener {
 
@@ -19,7 +21,7 @@ class HomeActivity : BaseActivity<HomeViewModel>(), View.OnClickListener {
     }
 
     override fun initViews() {
-        showFragment(M001Frg().TAG)
+        showFragment(M000Splash().TAG)
 
     }
 
@@ -50,6 +52,7 @@ class HomeActivity : BaseActivity<HomeViewModel>(), View.OnClickListener {
     override fun onClick(p0: View?) {
 
     }
+
 
 
 }

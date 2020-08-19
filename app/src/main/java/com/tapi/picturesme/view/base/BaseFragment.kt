@@ -6,10 +6,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModel
+import com.tapi.picturesme.App
+import com.tapi.picturesme.utils.StorageCommon
 import com.tapi.picturesme.view.event.OnActionCallBack
 
 abstract class BaseFragment : Fragment(), View.OnClickListener {
@@ -73,7 +75,6 @@ abstract class BaseFragment : Fragment(), View.OnClickListener {
     open fun showToast(text: String) {
         if (text != null) {
             Toast.makeText(mContext, text, Toast.LENGTH_SHORT).show()
-
         }
     }
 
@@ -81,6 +82,18 @@ abstract class BaseFragment : Fragment(), View.OnClickListener {
 
     override fun onClick(p0: View) {
         //do no thing
+    }
+
+    fun textOf(edt: EditText): String {
+        return edt.text.toString().trim()
+    }
+
+    fun textOf(tv: TextView): String {
+        return tv.text.toString().trim()
+    }
+
+   open fun getStorage(): StorageCommon {
+        return App.storageCommon
     }
 
 }
