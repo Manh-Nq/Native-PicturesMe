@@ -18,6 +18,7 @@ class PhotoAdapter(val context: Context) :
     ListAdapter<PhotoItemView, PhotoAdapter.PhotoHolder>(PhotoItemViewDiffUnit()) {
 
 
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoHolder {
         val view: View = LayoutInflater.from(context).inflate(R.layout.item_image, parent, false)
         return PhotoHolder(view)
@@ -28,8 +29,11 @@ class PhotoAdapter(val context: Context) :
 
         Glide.with(context).load(photoItemView.photoItem.picture.thumb)
             .override(holder.widthView, holder.widthView).into(holder.ivImage)
+
         holder.ivImage.tag = photoItemView
     }
+
+
 
     inner class PhotoHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
 
@@ -59,7 +63,7 @@ class PhotoAdapter(val context: Context) :
             ivCircle.visibility = View.GONE
             progress.visibility = View.VISIBLE
             ivDownload.visibility = View.GONE
-            callback.downLoad(item, progress, viewBg, ivCircle, ivDownload)
+            callback.downLoad(item, progress, viewBg, ivCircle, ivDownload, tvDownload)
         }
 
     }
@@ -76,7 +80,8 @@ class PhotoAdapter(val context: Context) :
             progress: ProgressBar,
             viewBg: View,
             ivCircle: ImageView,
-            ivDownload: ImageView
+            ivDownload: ImageView,
+            tvDownload: TextView
         )
     }
 

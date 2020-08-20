@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tapi.picturesme.functions.home.PhotoItemView
-import com.tapi.picturesme.utils.getRetrofit
+import com.tapi.picturesme.utils.ApiService
 import kotlinx.coroutines.launch
 
 open class HomeViewModel : ViewModel() {
@@ -16,29 +16,38 @@ open class HomeViewModel : ViewModel() {
     val images: LiveData<List<PhotoItemView>>
         get() = _images
 
-    private lateinit var photo: PhotoItemView
-
-    private var currPage = 1
+    private var currentPage = 1
 
     private var _loading = MutableLiveData<Boolean>()
     val loading: LiveData<Boolean>
         get() = _loading
 
     init {
+
         viewModelScope.launch {
             _loading.value = true
-            _images.value = getRetrofit.retrofitService.getPictures(page = currPage).map {
+            _images.value = ApiService.retrofitService.getPictures(page = currentPage).map {
                 PhotoItemView(it, false)
             }
             _loading.value = false
         }
+
+
+    }
+
+    fun getListData(): LiveData<List<PhotoItemView>> {
+        return images
+    }
+
+    fun getIsloading(): LiveData<Boolean> {
+        return loading
     }
 
     fun loadMore() {
-        currPage++
+        currentPage++
         viewModelScope.launch {
             _loading.value = true
-            val moreList = getRetrofit.retrofitService.getPictures(page = currPage).map {
+            val moreList = ApiService.retrofitService.getPictures(page = currentPage).map {
                 PhotoItemView(it, false)
             }
             val currList = _images.value?.toMutableList()
