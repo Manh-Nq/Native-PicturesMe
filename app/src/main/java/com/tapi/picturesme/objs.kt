@@ -1,4 +1,4 @@
-package com.tapi.picturesme.model
+package com.tapi.picturesme
 
 import com.google.gson.annotations.SerializedName
 
@@ -26,3 +26,5 @@ data class Picture(
         return "Picture(raw='$raw', full='$full', regular='$regular', small='$small', thumb='$thumb')"
     }
 }
+
+

@@ -9,7 +9,14 @@
         android:layout_height="match_parent"
         android:scaleType="centerCrop" />
 
+    <View
+        android:id="@+id/view_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorblackAlpha" />
+
     <ImageView
+        android:id="@+id/iv_circle"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_alignParentRight="true"
@@ -30,5 +37,21 @@
         android:layout_marginBottom="10dp"
         android:padding="5dp"
         android:src="@drawable/ic_down" />
+
+    <TextView
+        android:id="@+id/tv_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="DOWNLOAD"
+        android:textColor="@color/colorBlack"
+        android:textSize="20dp" />
+
+    <ProgressBar
+        android:id="@+id/progress_item"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_centerInParent="true"
+        android:visibility="gone" />
 
 </RelativeLayout>

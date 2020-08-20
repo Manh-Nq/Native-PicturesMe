@@ -12,7 +12,7 @@ import kotlin.system.measureTimeMillis
 
 object CommonUtils {
     var job = Job()
-    var myCoroutineScope = CoroutineScope(Dispatchers.Default + job)
+    var myCoroutineScope = CoroutineScope(Dispatchers.Main + job)
 
     fun getRetrofit(endpoint: String): Retrofit {
         val client: OkHttpClient =
