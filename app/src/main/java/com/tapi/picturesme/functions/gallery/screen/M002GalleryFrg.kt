@@ -20,14 +20,14 @@ class M002GalleryFrg : BaseFragment() {
 
     override fun initViews() {
 
-        progress = findViewById(R.id.progress, this)
-        progress.visibility = View.VISIBLE
-        ivImage = findViewById(R.id.iv_image_002, this)
-        var photoItem: PhotoItemView = getStorage().photoItem
-        GlobalScope.launch(Dispatchers.Main) {
-            Glide.with(mContext).load(photoItem.photoItem.picture.thumb).into(ivImage)
-            progress.visibility = View.GONE
-        }
+//        progress = findViewById(R.id.progress, this)
+//        progress.visibility = View.VISIBLE
+//        ivImage = findViewById(R.id.iv_image_002, this)
+//        var photoItem: PhotoItemView = getStorage().photoItem
+//        GlobalScope.launch(Dispatchers.Main) {
+//            Glide.with(mContext).load(photoItem.photoItem.picture.thumb).into(ivImage)
+//            progress.visibility = View.GONE
+//        }
 
     }
 

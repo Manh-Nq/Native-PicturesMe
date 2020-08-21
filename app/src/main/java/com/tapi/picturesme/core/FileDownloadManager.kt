@@ -1,4 +1,4 @@
-package com.tapi.picturesme.core.database
+package com.tapi.picturesme.core
 
 import android.R
 import android.content.Context

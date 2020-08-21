@@ -15,7 +15,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.tapi.picturesme.App
 import com.tapi.picturesme.R
-import com.tapi.picturesme.core.database.DownLoadPhoto
+import com.tapi.picturesme.core.DownLoadPhoto
+import com.tapi.picturesme.core.database.entity.PhotoEntity
 //import com.tapi.picturesme.core.database.entity.PhotoEntity
 import com.tapi.picturesme.core.server.ApiService
 import com.tapi.picturesme.functions.gallery.screen.M002GalleryFrg
@@ -133,10 +134,13 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
                     )
                     val cw = ContextWrapper(App.instance.getApplicationContext())
                     val directory: File = cw.getDir("imageDir", Context.MODE_PRIVATE)
-                   /* var photo = PhotoEntity()
+                    var photo = PhotoEntity()
+
+
                     photo.path = "$directory/$path"
                     photo.isDownload = true
-                    App.photoDatabase.photoDAO.savePhoto(photo)*/
+
+                    App.photoDatabase.photoDAO.morePhoto(photo)
                     item.isDownloaded = true
 
 
@@ -157,7 +161,6 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
     }
 
     override fun showImage(item: PhotoItemView) {
-        getStorage().photoItem= item
         mCallback.showFragment(M002GalleryFrg().TAG)
     }
 

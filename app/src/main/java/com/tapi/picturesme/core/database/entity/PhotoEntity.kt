@@ -1,12 +1,11 @@
 package com.tapi.picturesme.core.database.entity
 
-import androidx.annotation.NonNull
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-/*
-@Entity
+
+@Entity(tableName = "photo")
 class PhotoEntity {
     @PrimaryKey
     @ColumnInfo(name = "path")
@@ -15,4 +14,4 @@ class PhotoEntity {
     @ColumnInfo(name = "isDownload")
     var isDownload: Boolean = true
 
-}*/
+}
