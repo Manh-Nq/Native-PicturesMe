@@ -14,4 +14,10 @@ class PhotoEntity {
     @ColumnInfo(name = "isDownload")
     var isDownload: Boolean = true
 
+
+    override fun toString(): String {
+        return "PhotoEntity(path='$path', isDownload=$isDownload)"
+    }
+
+
 }

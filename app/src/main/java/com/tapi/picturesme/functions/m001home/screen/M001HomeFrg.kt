@@ -1,9 +1,11 @@
-package com.tapi.picturesme.functions.home.screen
+package com.tapi.picturesme.functions.m001home.screen
 
+//import com.tapi.picturesme.core.database.entity.PhotoEntity
 import android.content.Context
 import android.content.ContextWrapper
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.ProgressBar
@@ -15,19 +17,20 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.tapi.picturesme.App
 import com.tapi.picturesme.R
-import com.tapi.picturesme.core.DownLoadPhoto
+import com.tapi.picturesme.core.database.DownLoadPhoto
 import com.tapi.picturesme.core.database.entity.PhotoEntity
-//import com.tapi.picturesme.core.database.entity.PhotoEntity
 import com.tapi.picturesme.core.server.ApiService
-import com.tapi.picturesme.functions.gallery.screen.M002GalleryFrg
-import com.tapi.picturesme.functions.home.PhotoItemView
-import com.tapi.picturesme.functions.home.adapter.PhotoAdapter
-import com.tapi.picturesme.functions.home.viewmodel.HomeViewModel
+import com.tapi.picturesme.functions.m001home.PhotoItemView
+import com.tapi.picturesme.functions.m001home.adapter.PhotoAdapter
+import com.tapi.picturesme.functions.m001home.screen.HomeViewModel
+import com.tapi.picturesme.functions.m002gallery.screen.M002GalleryFrg
+import com.tapi.picturesme.functions.m003detail.screen.M003DetailFrg
 import com.tapi.picturesme.utils.CommonUtils
 import com.tapi.picturesme.view.base.BaseFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.ResponseBody
 import java.io.File
 
 class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
@@ -36,6 +39,8 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
     lateinit var photoAdapter: PhotoAdapter
     lateinit var homeViewModel: HomeViewModel
     lateinit var btAlbum: FloatingActionButton
+    lateinit var response: ResponseBody
+    lateinit var bitMap: Bitmap
     lateinit var progressBarLoading: ProgressBar
 
     override fun initViews() {
@@ -45,13 +50,13 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
         rvPhoto = findViewById(R.id.rv_photo, this)
 
 
-        initList()
+        initData()
         observeViewModel()
 
         recycleListener()
     }
 
-    private fun initList() {
+    private fun initData() {
         rvPhoto.layoutManager = GridLayoutManager(mContext, 2)
 
         photoAdapter = PhotoAdapter(mContext)
@@ -62,6 +67,7 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
     private fun observeViewModel() {
         homeViewModel.getListData().observe(this, Observer {
             photoAdapter.submitList(it)
+
         })
         homeViewModel.getIsloading().observe(this, Observer {
             progressBarLoading.visibility = if (it) View.VISIBLE else View.GONE
@@ -106,7 +112,7 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
 
 
     override fun getLayoutByID(): Int {
-        return R.layout.frg_1
+        return R.layout.m001_home_frg
     }
 
     override fun showPreviousFrg() {
@@ -123,17 +129,21 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
     ) {
         try {
             var link = item.photoItem.picture.raw
+
             CommonUtils.myCoroutineScope.launch {
                 withContext(Dispatchers.IO) {
-                    var response =
-                        ApiService.retrofitService.getPhotoFromSever(item.photoItem.picture.raw)
-                    var bitMap: Bitmap = BitmapFactory.decodeStream(response.byteStream())
-                    val path = link.substring(link.indexOf('-') + 1, link.indexOf('?'))
+                    response = ApiService.retrofitService.getPhotoFromSever(link)
+                    bitMap = BitmapFactory.decodeStream(response.byteStream())
+                    val path = link.substring(link.indexOf('-') + 1, link.indexOf('?'))+".png"
+
+                    /** save image to internal */
+
                     DownLoadPhoto().saveToInternalStorage(
-                        bitMap, path
-                    )
+                        bitMap, path)
+
                     val cw = ContextWrapper(App.instance.getApplicationContext())
                     val directory: File = cw.getDir("imageDir", Context.MODE_PRIVATE)
+
                     var photo = PhotoEntity()
 
 
@@ -160,9 +170,7 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
 
     }
 
-    override fun showImage(item: PhotoItemView) {
-        mCallback.showFragment(M002GalleryFrg().TAG)
-    }
+
 
 
 }

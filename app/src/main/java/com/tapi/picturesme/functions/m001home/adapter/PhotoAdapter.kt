@@ -1,4 +1,4 @@
-package com.tapi.picturesme.functions.home.adapter
+package com.tapi.picturesme.functions.m001home.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.tapi.picturesme.R
-import com.tapi.picturesme.functions.home.PhotoItemView
+import com.tapi.picturesme.functions.m001home.PhotoItemView
 
 class PhotoAdapter(val context: Context) :
     ListAdapter<PhotoItemView, PhotoAdapter.PhotoHolder>(PhotoItemViewDiffUnit()) {
@@ -27,10 +27,23 @@ class PhotoAdapter(val context: Context) :
     override fun onBindViewHolder(holder: PhotoHolder, position: Int) {
         var photoItemView: PhotoItemView = getItem(position)
 
-        Glide.with(context).load(photoItemView.photoItem.picture.thumb)
-            .override(holder.widthView, holder.widthView).into(holder.ivImage)
+        if (photoItemView.isDownloaded == false) {
+            Glide.with(context).load(photoItemView.photoItem.picture.thumb)
+                .override(holder.widthView, holder.widthView).into(holder.ivImage)
 
+        } else if (photoItemView.isDownloaded == true) {
+
+            Glide.with(context).load(photoItemView.photoItem.picture.thumb)
+                .override(holder.widthView, holder.widthView).into(holder.ivImage)
+            holder.ivCircle.visibility = View.GONE
+            holder.ivDownload.visibility = View.GONE
+            holder.viewBg.visibility = View.GONE
+            holder.progress.visibility = View.GONE
+            holder.tvDownload.visibility = View.GONE
+        }
         holder.ivImage.tag = photoItemView
+
+
     }
 
 
@@ -48,16 +61,13 @@ class PhotoAdapter(val context: Context) :
 
         init {
             ivDownload.setOnClickListener(this)
-            ivImage.setOnClickListener(this)
         }
 
 
         override fun onClick(p0: View) {
-            var item = ivImage.tag as PhotoItemView
+            val item = ivImage.tag as PhotoItemView
             when (p0.id) {
                 R.id.iv_download -> downLoad(item)
-                R.id.iv_image -> callback.showImage(item)
-
 
             }
         }
@@ -87,8 +97,6 @@ class PhotoAdapter(val context: Context) :
             ivDownload: ImageView,
             tvDownload: TextView
         )
-
-        fun showImage(item: PhotoItemView)
 
     }
 

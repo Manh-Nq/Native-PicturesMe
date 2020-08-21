@@ -17,6 +17,6 @@ class App : Application() {
         super.onCreate()
         storageCommon = StorageCommon
         instance = this
-        photoDatabase= Room.databaseBuilder(this,PhotoDatabase::class.java,"photo").build()
+        photoDatabase = Room.databaseBuilder(this, PhotoDatabase::class.java, "photo").build()
     }
 }

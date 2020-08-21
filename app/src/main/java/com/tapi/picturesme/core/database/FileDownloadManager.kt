@@ -1,19 +1,13 @@
 package com.tapi.picturesme.core
 
-import android.R
 import android.content.Context
 import android.content.ContextWrapper
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.util.Log
-import android.widget.ImageView
 import com.tapi.picturesme.App
+import com.tapi.picturesme.PhotoItem
 import java.io.File
-import java.io.FileInputStream
 import java.io.FileOutputStream
-import java.io.RandomAccessFile
-import java.net.URL
-import java.net.URLConnection
 
 
 class DownLoadPhoto() {
@@ -43,11 +37,33 @@ class DownLoadPhoto() {
         return directory.getAbsolutePath()
     }
 
-    private fun loadImageFromStorage(path: String) {
-        try {
-            val f = File(path, "profile.jpg")
-            val b = BitmapFactory.decodeStream(FileInputStream(f))
-        } catch (e: Exception) {
-            e.printStackTrace()
+
+    suspend fun isDownloaded(photoItem: PhotoItem): Boolean {
+        var listDB = App.photoDatabase.photoDAO.getListPhoto()
+        for (item in listDB) {
+            val link = photoItem.picture.raw
+            val path = link.substring(link.indexOf('-') + 1, link.indexOf('?')) + ".png"
+            Log.d("TAG", "isDownloaded: $path")
+            var pathDb = item.path.substring(item.path.lastIndexOf('/') + 1, item.path.length)
+
+
+            Log.d("TAG", "isDownloading: $pathDb")
+
+            Log.d("TAG", "isDownloading: ${item.path}")
+
+            if (pathDb.equals(path)) {
+                return true
+            }
         }
-    }}
+        return false
+    }
+
+    suspend fun deleteFile(path: String): Boolean {
+        var file: File = File(path)
+        file.delete()
+        if (file.delete()) {
+            return true
+        }
+        return false
+    }
+}

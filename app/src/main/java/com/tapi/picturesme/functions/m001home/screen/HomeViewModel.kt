@@ -1,11 +1,12 @@
-package com.tapi.picturesme.functions.home.viewmodel
+package com.tapi.picturesme.functions.m001home.screen
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.tapi.picturesme.core.database.DownLoadPhoto
 import com.tapi.picturesme.core.server.ApiService
-import com.tapi.picturesme.functions.home.PhotoItemView
+import com.tapi.picturesme.functions.m001home.PhotoItemView
 import kotlinx.coroutines.launch
 
 open class HomeViewModel : ViewModel() {
@@ -27,8 +28,13 @@ open class HomeViewModel : ViewModel() {
 
         viewModelScope.launch {
             _loading.value = true
-            _images.value = ApiService.retrofitService.getPictures(page = currentPage).map {
-                PhotoItemView(it, false)
+            _images.value = ApiService.retrofitService.getPictures(page = currentPage).map { item ->
+                if (DownLoadPhoto().isDownloaded(item)) {
+                    PhotoItemView(item, true)
+
+                } else {
+                    PhotoItemView(item, false)
+                }
             }
             _loading.value = false
         }
