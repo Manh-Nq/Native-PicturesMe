@@ -9,7 +9,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import com.tapi.picturesme.R
-import com.tapi.picturesme.functions.home.screen.HomeViewModel
+import com.tapi.picturesme.functions.home.viewmodel.HomeViewModel
 import com.tapi.picturesme.view.base.BaseActivity
 import com.tapi.picturesme.view.base.BaseFragment
 import com.tapi.picturesme.view.fragment.M000Splash

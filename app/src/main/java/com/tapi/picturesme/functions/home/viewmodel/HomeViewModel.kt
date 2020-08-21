@@ -1,11 +1,11 @@
-package com.tapi.picturesme.functions.home.screen
+package com.tapi.picturesme.functions.home.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.tapi.picturesme.core.server.ApiService
 import com.tapi.picturesme.functions.home.PhotoItemView
-import com.tapi.picturesme.utils.ApiService
 import kotlinx.coroutines.launch
 
 open class HomeViewModel : ViewModel() {
@@ -22,6 +22,7 @@ open class HomeViewModel : ViewModel() {
     val loading: LiveData<Boolean>
         get() = _loading
 
+
     init {
 
         viewModelScope.launch {
@@ -31,7 +32,6 @@ open class HomeViewModel : ViewModel() {
             }
             _loading.value = false
         }
-
 
     }
 

@@ -1,5 +1,7 @@
 package com.tapi.picturesme.functions.home.screen
 
+import android.content.Context
+import android.content.ContextWrapper
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.view.View
@@ -11,16 +13,21 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.tapi.picturesme.App
 import com.tapi.picturesme.R
+import com.tapi.picturesme.core.database.DownLoadPhoto
+//import com.tapi.picturesme.core.database.entity.PhotoEntity
+import com.tapi.picturesme.core.server.ApiService
 import com.tapi.picturesme.functions.gallery.screen.M002GalleryFrg
 import com.tapi.picturesme.functions.home.PhotoItemView
 import com.tapi.picturesme.functions.home.adapter.PhotoAdapter
-import com.tapi.picturesme.utils.ApiService
+import com.tapi.picturesme.functions.home.viewmodel.HomeViewModel
 import com.tapi.picturesme.utils.CommonUtils
 import com.tapi.picturesme.view.base.BaseFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 
 class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
     val TAG = M001HomeFrg::class.java.name
@@ -114,11 +121,24 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
         tvDownload: TextView
     ) {
         try {
+            var link = item.photoItem.picture.raw
             CommonUtils.myCoroutineScope.launch {
                 withContext(Dispatchers.IO) {
                     var response =
                         ApiService.retrofitService.getPhotoFromSever(item.photoItem.picture.raw)
                     var bitMap: Bitmap = BitmapFactory.decodeStream(response.byteStream())
+                    val path = link.substring(link.indexOf('-') + 1, link.indexOf('?'))
+                    DownLoadPhoto().saveToInternalStorage(
+                        bitMap, path
+                    )
+                    val cw = ContextWrapper(App.instance.getApplicationContext())
+                    val directory: File = cw.getDir("imageDir", Context.MODE_PRIVATE)
+                   /* var photo = PhotoEntity()
+                    photo.path = "$directory/$path"
+                    photo.isDownload = true
+                    App.photoDatabase.photoDAO.savePhoto(photo)*/
+                    item.isDownloaded = true
+
 
                 }
                 showToast("download success")
@@ -136,42 +156,10 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
 
     }
 
+    override fun showImage(item: PhotoItemView) {
+        getStorage().photoItem= item
+        mCallback.showFragment(M002GalleryFrg().TAG)
+    }
 
-//    override fun downLoad(
-//        item: PhotoItemView,
-//        progress: ProgressBar,
-//        viewBg: View,
-//        ivCircle: ImageView,
-//        ivDownload: ImageView
-//    ) {
-//
-//
-//        val path =
-//            Environment.getDataDirectory().toString() + "/data/" + App.instance.packageName
-//        var link = item.photoItem.picture.raw
-//
-//        val fileName = path + "/${link.substring(link.indexOf('-') + 1, link.indexOf('?'))}"
-//        CommonUtils.myCoroutineScope.launch {
-//            var result =
-//                async { DownLoadPhoto().downLoadImage(item.photoItem.picture.raw, fileName) }
-//
-//            Log.d(TAG, "downLoad: $fileName")
-//
-//            if (result.await().equals(DownLoadPhoto().DONE)) {
-//                withContext(Dispatchers.Main) {
-//                    Toast.makeText(mContext, "download success", Toast.LENGTH_SHORT).show()
-//                    progress.visibility = View.GONE
-//                    viewBg.visibility = View.GONE
-//                }
-//            } else if (result.await().equals(DownLoadPhoto().FAIL)) {
-//                withContext(Dispatchers.Main) {
-//                    Toast.makeText(mContext, "download fail", Toast.LENGTH_SHORT).show()
-//                    progress.visibility = View.GONE
-//                    ivCircle.visibility = View.VISIBLE
-//                    ivDownload.visibility = View.VISIBLE
-//                }
-//            }
-//        }
-//    }
 
 }

@@ -1,5 +1,8 @@
 package com.tapi.picturesme
 
+import androidx.annotation.NonNull
+import androidx.room.ColumnInfo
+import androidx.room.Entity
 import com.google.gson.annotations.SerializedName
 
 data class PhotoItem(@SerializedName("urls") val picture: Picture) {
@@ -26,5 +29,6 @@ data class Picture(
         return "Picture(raw='$raw', full='$full', regular='$regular', small='$small', thumb='$thumb')"
     }
 }
+
 
 

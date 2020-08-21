@@ -48,6 +48,7 @@ class PhotoAdapter(val context: Context) :
 
         init {
             ivDownload.setOnClickListener(this)
+            ivImage.setOnClickListener(this)
         }
 
 
@@ -55,6 +56,9 @@ class PhotoAdapter(val context: Context) :
             var item = ivImage.tag as PhotoItemView
             when (p0.id) {
                 R.id.iv_download -> downLoad(item)
+                R.id.iv_image -> callback.showImage(item)
+
+
             }
         }
 
@@ -83,6 +87,9 @@ class PhotoAdapter(val context: Context) :
             ivDownload: ImageView,
             tvDownload: TextView
         )
+
+        fun showImage(item: PhotoItemView)
+
     }
 
 }

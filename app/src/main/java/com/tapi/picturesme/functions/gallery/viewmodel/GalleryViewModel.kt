@@ -1,4 +1,4 @@
-package com.tapi.picturesme.functions.gallery.screen
+package com.tapi.picturesme.functions.gallery.viewmodel
 
 import androidx.lifecycle.ViewModel
 
