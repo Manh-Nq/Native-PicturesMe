@@ -2,7 +2,7 @@ package com.tapi.picturesme
 
 import android.app.Application
 import androidx.room.Room
-import com.tapi.picturesme.core.database.database.PhotoDatabase
+import com.tapi.picturesme.core.database.dao.PhotoDatabase
 //import com.tapi.picturesme.core.database.dao.PhotoDatabase
 import com.tapi.picturesme.utils.StorageCommon
 

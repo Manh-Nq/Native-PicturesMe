@@ -29,12 +29,12 @@ class PhotoAdapter(val context: Context) :
 
         if (photoItemView.isDownloaded == false) {
             Glide.with(context).load(photoItemView.photoItem.picture.thumb)
-                .override(holder.widthView, holder.widthView).into(holder.ivImage)
+                .override(holder.widthView, holder.widthView+20).into(holder.ivImage)
 
         } else if (photoItemView.isDownloaded == true) {
 
             Glide.with(context).load(photoItemView.photoItem.picture.thumb)
-                .override(holder.widthView, holder.widthView).into(holder.ivImage)
+                .override(holder.widthView, holder.widthView ).into(holder.ivImage)
             holder.ivCircle.visibility = View.GONE
             holder.ivDownload.visibility = View.GONE
             holder.viewBg.visibility = View.GONE

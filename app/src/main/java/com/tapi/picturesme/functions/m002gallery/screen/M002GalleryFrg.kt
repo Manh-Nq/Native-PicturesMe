@@ -20,16 +20,27 @@ class M002GalleryFrg : BaseFragment(), GalleryAdapter.clickItemListener {
     lateinit var viewModel: GalleryViewModel
 
     override fun initViews() {
+        viewModel = ViewModelProvider(this).get(GalleryViewModel::class.java)
+        rvGallery = findViewById(R.id.rv_gallery, this)
+        initData()
+        observeViewModel()
+    }
 
-//        progress = findViewById(R.id.progress, this)
-//        progress.visibility = View.VISIBLE
-//        ivImage = findViewById(R.id.iv_image_002, this)
-//        var photoItem: PhotoItemView = getStorage().photoItem
-//        GlobalScope.launch(Dispatchers.Main) {
-//            Glide.with(mContext).load(photoItem.photoItem.picture.thumb).into(ivImage)
-//            progress.visibility = View.GONE
-//        }
+    private fun initData() {
+        rvGallery.layoutManager = GridLayoutManager(mContext, 2)
 
+        galleryAdapter = GalleryAdapter(mContext)
+        galleryAdapter.setClickItemListener(this)
+        rvGallery.adapter = galleryAdapter
+    }
+
+    private fun observeViewModel() {
+        viewModel.getListPhoto().observe(this, Observer {
+            var listData = it
+            Log.d(TAG, "observeViewModel: ${listData.size}")
+            galleryAdapter.submitList(it)
+
+        })
     }
 
     override fun getLayoutByID(): Int {

@@ -45,7 +45,7 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:text="DOWNLOAD"
-        android:textColor="@color/colorBlack"
+        android:textColor="@color/colorRedAlpha"
         android:textSize="20dp" />
 
     <ProgressBar

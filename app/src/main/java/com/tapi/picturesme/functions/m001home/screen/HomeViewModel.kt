@@ -50,7 +50,7 @@ open class HomeViewModel : ViewModel() {
     }
 
     fun loadMore() {
-        currentPage++
+     currentPage++
         viewModelScope.launch {
             _loading.value = true
             val moreList = ApiService.retrofitService.getPictures(page = currentPage).map {

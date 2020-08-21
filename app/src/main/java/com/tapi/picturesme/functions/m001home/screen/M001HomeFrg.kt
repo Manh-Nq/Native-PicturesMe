@@ -145,12 +145,9 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
                     val directory: File = cw.getDir("imageDir", Context.MODE_PRIVATE)
 
                     var photo = PhotoEntity()
-
-
                     photo.path = "$directory/$path"
                     photo.isDownload = true
-
-                    App.photoDatabase.photoDAO.morePhoto(photo)
+                    App.photoDatabase.photoDAO.savePhoto(photo)
                     item.isDownloaded = true
 
 

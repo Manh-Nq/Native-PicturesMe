@@ -1,8 +1,12 @@
-package com.tapi.picturesme.core
+package com.tapi.picturesme.core.database
 
 import android.content.Context
 import android.content.ContextWrapper
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
+import android.util.DisplayMetrics
 import android.util.Log
 import com.tapi.picturesme.App
 import com.tapi.picturesme.PhotoItem

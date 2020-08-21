@@ -1,9 +1,9 @@
-package com.tapi.picturesme.core.database.database
+package com.tapi.picturesme.core.database.dao
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.tapi.picturesme.core.database.dao.PhotoDAO
 import com.tapi.picturesme.core.database.entity.PhotoEntity
+
 
 @Database(entities = [PhotoEntity::class], version = 1)
 abstract class PhotoDatabase : RoomDatabase() {

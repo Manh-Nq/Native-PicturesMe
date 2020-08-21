@@ -6,11 +6,17 @@ import androidx.room.Insert
 import androidx.room.Query
 import com.tapi.picturesme.core.database.entity.PhotoEntity
 
+
 @Dao
 interface PhotoDAO {
     @Insert
-    suspend fun morePhoto(photoEntity: PhotoEntity)
+    suspend fun savePhoto(photoEntity: PhotoEntity)
 
     @Query("select * from photo")
-    suspend fun getListPhotos(): List<PhotoEntity>
+    suspend fun getListPhoto(): List<PhotoEntity>
+
+    @Delete
+    suspend fun deletePhoto(photoEntity: PhotoEntity)
+
+
 }
