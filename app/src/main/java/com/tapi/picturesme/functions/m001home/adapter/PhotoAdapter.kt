@@ -17,7 +17,6 @@ import com.tapi.picturesme.functions.m001home.PhotoItemView
 class PhotoAdapter(val context: Context) :
     ListAdapter<PhotoItemView, PhotoAdapter.PhotoHolder>(PhotoItemViewDiffUnit()) {
 
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoHolder {
         val view: View = LayoutInflater.from(context).inflate(R.layout.item_image, parent, false)
         return PhotoHolder(view)
@@ -29,6 +28,11 @@ class PhotoAdapter(val context: Context) :
         if (!photoItemView.isDownloaded) {
             Glide.with(context).load(photoItemView.photoItem.picture.thumb)
                 .override(holder.widthView, holder.widthView + 20).into(holder.ivImage)
+
+            holder.ivCircle.visibility = View.VISIBLE
+            holder.ivDownload.visibility = View.VISIBLE
+            holder.viewBg.visibility = View.VISIBLE
+            holder.tvDownload.visibility = View.VISIBLE
 
         } else if (photoItemView.isDownloaded) {
 
@@ -42,10 +46,7 @@ class PhotoAdapter(val context: Context) :
         }
         holder.ivImage.tag = photoItemView
 
-
     }
-
-
 
     inner class PhotoHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
 

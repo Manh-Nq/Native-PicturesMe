@@ -18,6 +18,7 @@ class M003DetailFrg : BaseFragment() {
     val TAG = M003DetailFrg::class.java.name
     lateinit var ivImage: ImageView
     lateinit var ivDelete: ImageView
+    lateinit var ivBack: ImageView
     lateinit var item: PhotoEntity
     lateinit var viewModel: DetailViewmodel
 
@@ -26,6 +27,7 @@ class M003DetailFrg : BaseFragment() {
         item = getStorage().photoItem
         ivImage = findViewById(R.id.iv_detail, this)
         ivDelete = findViewById(R.id.iv_delete, this)
+        ivBack = findViewById(R.id.iv_back, this)
 
         obseverViewmodel()
     }
@@ -47,7 +49,12 @@ class M003DetailFrg : BaseFragment() {
     override fun onClick(p0: View) {
         when (p0.id) {
             R.id.iv_delete -> showDialogDelete()
+            R.id.iv_back -> backToFrg()
         }
+    }
+
+    private fun backToFrg() {
+        mCallback.showFragment(M002GalleryFrg().TAG)
     }
 
     private fun showDialogDelete() {

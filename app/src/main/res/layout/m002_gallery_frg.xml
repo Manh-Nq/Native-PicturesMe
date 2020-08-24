@@ -6,12 +6,12 @@
     android:gravity="center">
 
 
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_gallery"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:listitem="@layout/item_gallery"
-        />
+        tools:listitem="@layout/item_gallery" />
 
     <ProgressBar
 
@@ -21,5 +21,25 @@
         android:visibility="gone"
         android:layout_centerInParent="true" />
 
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="56dp">
+
+        <ImageView
+            android:id="@+id/iv_back"
+            android:padding="10dp"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_baseline_arrow_back_ios_24" />
+        <TextView
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:text="Gallery"
+            android:gravity="center"
+            android:textColor="@color/colorBlack"
+            android:fontFamily="sans-serif-condensed-light"
+            android:textSize="18dp"
+            />
+    </TableRow>
 
 </RelativeLayout>

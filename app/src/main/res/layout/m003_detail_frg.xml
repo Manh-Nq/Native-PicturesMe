@@ -20,4 +20,26 @@
         android:scaleType="centerCrop"
         android:src="@drawable/ic_delete" />
 
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="56dp">
+
+        <ImageView
+            android:id="@+id/iv_back"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:padding="10dp"
+            android:src="@drawable/ic_baseline_arrow_back_ios_24" />
+
+        <TextView
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:fontFamily="sans-serif-condensed-light"
+            android:gravity="center"
+            android:text="Image"
+            android:textColor="@color/colorBlack"
+            android:textSize="18dp" />
+    </TableRow>
+
+
 </RelativeLayout>

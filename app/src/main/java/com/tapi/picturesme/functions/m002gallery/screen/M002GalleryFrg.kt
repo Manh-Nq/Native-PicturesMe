@@ -1,13 +1,14 @@
 package com.tapi.picturesme.functions.m002gallery.screen
 
 import android.util.Log
+import android.view.View
+import android.widget.ImageView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.tapi.picturesme.R
 import com.tapi.picturesme.core.database.entity.PhotoEntity
-import com.tapi.picturesme.functions.m001home.PhotoItemView
 import com.tapi.picturesme.functions.m001home.screen.M001HomeFrg
 import com.tapi.picturesme.functions.m002gallery.adapter.GalleryAdapter
 import com.tapi.picturesme.functions.m003detail.screen.M003DetailFrg
@@ -18,8 +19,10 @@ class M002GalleryFrg : BaseFragment(), GalleryAdapter.clickItemListener {
     lateinit var rvGallery: RecyclerView
     lateinit var galleryAdapter: GalleryAdapter
     lateinit var viewModel: GalleryViewModel
+    lateinit var ivBack: ImageView
 
     override fun initViews() {
+        ivBack = findViewById(R.id.iv_back, this)
         viewModel = ViewModelProvider(this).get(GalleryViewModel::class.java)
         rvGallery = findViewById(R.id.rv_gallery, this)
         initData()
@@ -41,6 +44,16 @@ class M002GalleryFrg : BaseFragment(), GalleryAdapter.clickItemListener {
             galleryAdapter.submitList(it)
 
         })
+    }
+
+    override fun onClick(p0: View) {
+        when (p0.id) {
+            R.id.iv_back -> backToFrg()
+        }
+    }
+
+    private fun backToFrg() {
+        mCallback.showFragment(M001HomeFrg().TAG)
     }
 
     override fun getLayoutByID(): Int {

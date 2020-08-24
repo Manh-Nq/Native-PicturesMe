@@ -142,12 +142,12 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
             var link = item.photoItem.picture.raw
 
             CommonUtils.myCoroutineScope.launch {
-                withContext(Dispatchers.IO) {
+                withContext(Dispatchers.Default) {
 
-                    var newUrl = link + "&w=" + 300 + "&dpi=" + 1
-                    Log.d(TAG, "URLcustom: $newUrl")
+//                    var newUrl = link + "&w=" + 300 + "&dpi=" + 1
+//                    Log.d(TAG, "URLcustom: $newUrl")
                     Log.d(TAG, "URLOffical: $link ")
-                    response = ApiService.retrofitService.getPhotoFromSever(newUrl)
+                    response = ApiService.retrofitService.getPhotoFromSever(link)
                     bitMap = BitmapFactory.decodeStream(response.byteStream())
 
 
