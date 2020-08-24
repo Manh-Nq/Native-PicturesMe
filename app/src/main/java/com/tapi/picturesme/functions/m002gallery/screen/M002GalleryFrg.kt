@@ -36,8 +36,8 @@ class M002GalleryFrg : BaseFragment(), GalleryAdapter.clickItemListener {
 
     private fun observeViewModel() {
         viewModel.getListPhoto().observe(this, Observer {
-            var listData = it
-            Log.d(TAG, "observeViewModel: ${listData.size}")
+
+            Log.d(TAG, "observeViewModel: ${it.size}")
             galleryAdapter.submitList(it)
 
         })

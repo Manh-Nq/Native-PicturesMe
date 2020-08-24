@@ -19,6 +19,8 @@
             android:layout_height="match_parent"
             tools:listitem="@layout/item_image" />
 
+
+
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/bt_album"
             android:layout_width="50dp"

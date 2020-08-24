@@ -1,11 +1,13 @@
 package com.tapi.picturesme
 
-import androidx.annotation.NonNull
-import androidx.room.ColumnInfo
-import androidx.room.Entity
 import com.google.gson.annotations.SerializedName
 
-data class PhotoItem(@SerializedName("urls") val picture: Picture) {
+data class PhotoItem(
+    @SerializedName("id") val id: String,
+    @SerializedName("created_at") val created :String,
+    @SerializedName("updated_at") val updated: String,
+    @SerializedName("urls") val picture: Picture
+) {
 
 }
 

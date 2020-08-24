@@ -1,5 +1,6 @@
 package com.tapi.picturesme.functions.m001home.screen
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -24,16 +25,19 @@ open class HomeViewModel : ViewModel() {
         get() = _loading
 
 
+
+
     init {
 
         viewModelScope.launch {
             _loading.value = true
-            _images.value = ApiService.retrofitService.getPictures(page = currentPage).map { item ->
-                if (DownLoadPhoto().isDownloaded(item)) {
-                    PhotoItemView(item, true)
+            _images.value = ApiService.retrofitService.getPictures(page = currentPage).map {
+                Log.d("TAG", "comfirmPhoto: $it")
+                if (DownLoadPhoto().isDownloaded(it)) {
+                    PhotoItemView(it, true)
 
                 } else {
-                    PhotoItemView(item, false)
+                    PhotoItemView(it, false)
                 }
             }
             _loading.value = false
@@ -54,7 +58,12 @@ open class HomeViewModel : ViewModel() {
         viewModelScope.launch {
             _loading.value = true
             val moreList = ApiService.retrofitService.getPictures(page = currentPage).map {
-                PhotoItemView(it, false)
+                if (DownLoadPhoto().isDownloaded(it)) {
+                    PhotoItemView(it, true)
+
+                } else {
+                    PhotoItemView(it, false)
+                }
             }
             val currList = _images.value?.toMutableList()
             currList?.let {

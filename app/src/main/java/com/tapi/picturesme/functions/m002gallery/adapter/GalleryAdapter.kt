@@ -11,11 +11,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.tapi.picturesme.R
 import com.tapi.picturesme.core.database.entity.PhotoEntity
-import com.tapi.picturesme.functions.m001home.PhotoItemView
 
 class GalleryAdapter(val context: Context) :
     ListAdapter<PhotoEntity, GalleryAdapter.GalleryHolder>(GalleryDiffUnit()) {
 
+    init {
+        setHasStableIds(true)
+    }
+
+    override fun getItemId(position: Int): Long {
+        return super.getItemId(position)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GalleryHolder {
         var item: View = LayoutInflater.from(context).inflate(R.layout.item_gallery, parent, false)
@@ -31,14 +37,18 @@ class GalleryAdapter(val context: Context) :
         holder.ivImage.tag = photoEntity
     }
 
+
+
     inner class GalleryHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
         View.OnClickListener {
         var ivImage = itemView.findViewById<ImageView>(R.id.iv_gallery)
         var width = itemView.resources.displayMetrics.widthPixels / 2
-
+        var view = itemView
         init {
             ivImage.setOnClickListener(this)
         }
+
+
 
         override fun onClick(p0: View?) {
             val item = ivImage.tag as PhotoEntity

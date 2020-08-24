@@ -4,25 +4,18 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModel
 import com.tapi.picturesme.App
 import com.tapi.picturesme.R
 import com.tapi.picturesme.utils.StorageCommon
 import com.tapi.picturesme.view.event.OnActionCallBack
 
-abstract class BaseActivity<T : ViewModel> : AppCompatActivity(), OnActionCallBack {
-    open lateinit var mViewModel: T
+abstract class BaseActivity : AppCompatActivity(), OnActionCallBack {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(getLayoutByID())
-        mViewModel = getViewModel() as T
-        registerViewModel()
         initViews()
     }
 
-    abstract fun registerViewModel()
-
-    abstract fun getViewModel(): Any
 
     abstract fun initViews()
 
@@ -46,6 +39,11 @@ abstract class BaseActivity<T : ViewModel> : AppCompatActivity(), OnActionCallBa
 
         }
     }
+    open fun showToast(text: String, duration:Int) {
+        if (text != null) {
+            Toast.makeText(this, text, duration).show()
+        }
+    }
 
     override fun showFragment(tag: String) {
 
@@ -59,8 +57,7 @@ abstract class BaseActivity<T : ViewModel> : AppCompatActivity(), OnActionCallBa
             }
             fragment.setOnCallBack(this)
             supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.ln_main, fragment!!, tag)
+                .beginTransaction().replace(R.id.ln_main, fragment, tag)
                 .commit()
             getStorage().currentTag = tag
         } catch (e: Exception) {

@@ -37,7 +37,7 @@ class M003DetailFrg : BaseFragment() {
                 .skipMemoryCache(true)
                 .centerInside()
 
-            Glide.with(mContext).load(item.path).fitCenter().apply(requestOptions).centerCrop()
+            Glide.with(mContext).load(item.path).centerCrop().apply(requestOptions).centerCrop()
                 .into(
                     ivImage
                 )

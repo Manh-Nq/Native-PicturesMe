@@ -27,6 +27,7 @@ class DetailViewmodel : ViewModel() {
         App.photoDatabase.photoDAO.deletePhoto(item)
         DownLoadPhoto().deleteFile(item.path)
 
+
         Log.d("TAG", "deteleImage: ${item.path}")
 
     }

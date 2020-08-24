@@ -18,7 +18,6 @@ class PhotoAdapter(val context: Context) :
     ListAdapter<PhotoItemView, PhotoAdapter.PhotoHolder>(PhotoItemViewDiffUnit()) {
 
 
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoHolder {
         val view: View = LayoutInflater.from(context).inflate(R.layout.item_image, parent, false)
         return PhotoHolder(view)
@@ -27,14 +26,14 @@ class PhotoAdapter(val context: Context) :
     override fun onBindViewHolder(holder: PhotoHolder, position: Int) {
         var photoItemView: PhotoItemView = getItem(position)
 
-        if (photoItemView.isDownloaded == false) {
+        if (!photoItemView.isDownloaded) {
             Glide.with(context).load(photoItemView.photoItem.picture.thumb)
-                .override(holder.widthView, holder.widthView+20).into(holder.ivImage)
+                .override(holder.widthView, holder.widthView + 20).into(holder.ivImage)
 
-        } else if (photoItemView.isDownloaded == true) {
+        } else if (photoItemView.isDownloaded) {
 
             Glide.with(context).load(photoItemView.photoItem.picture.thumb)
-                .override(holder.widthView, holder.widthView ).into(holder.ivImage)
+                .override(holder.widthView, holder.widthView).into(holder.ivImage)
             holder.ivCircle.visibility = View.GONE
             holder.ivDownload.visibility = View.GONE
             holder.viewBg.visibility = View.GONE
