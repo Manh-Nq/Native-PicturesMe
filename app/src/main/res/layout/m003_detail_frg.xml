@@ -5,12 +5,14 @@
     android:orientation="vertical">
 
     <ImageView
+        android:layout_centerInParent="true"
+        android:layout_below="@id/tb_actionbar"
         android:clickable="true"
         android:focusable="true"
         android:id="@+id/iv_detail"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="centerCrop" />
+        android:layout_height="wrap_content"
+        android:scaleType="centerInside" />
 
     <ImageView
         android:id="@+id/iv_delete"
@@ -23,6 +25,7 @@
         android:src="@drawable/ic_delete" />
 
     <TableRow
+        android:id="@+id/tb_actionbar"
         android:layout_width="match_parent"
         android:layout_height="56dp">
 

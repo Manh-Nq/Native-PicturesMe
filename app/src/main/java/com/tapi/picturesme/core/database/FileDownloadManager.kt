@@ -2,13 +2,13 @@ package com.tapi.picturesme.core.database
 
 import android.content.Context
 import android.content.ContextWrapper
-import android.content.Intent
 import android.graphics.Bitmap
-import android.location.LocationManager
-import android.provider.Settings
 import android.util.Log
 import com.tapi.picturesme.App
 import com.tapi.picturesme.PhotoItem
+import com.tapi.picturesme.core.database.entity.PhotoEntity
+import com.tapi.picturesme.utils.CommonUtils
+import kotlinx.coroutines.Deferred
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -17,27 +17,27 @@ import java.io.IOException
 class DownLoadPhoto() {
 
 
-    suspend fun saveToInternalStorage(bitmapImage: Bitmap, path: String): String? {
+     fun saveToInternalStorage(bitmapImage: Bitmap, path: String): String? {
 
-        val cw = ContextWrapper(App.instance.getApplicationContext())
-        // path to /data/data/yourapp/app_data/imageDir
-        val directory: File = cw.getDir("imageDir", Context.MODE_PRIVATE)
-        // Create imageDir
-        val mypath = File(directory, path)
-        var out: FileOutputStream? = null
-        try {
-            out = FileOutputStream(mypath)
-            // Use the compress method on the BitMap object to write image to the OutputStream
-            bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, out)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } finally {
-            try {
-                out?.close()
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-        }
+         val cw = ContextWrapper(App.instance.getApplicationContext())
+         // path to /data/data/yourapp/app_data/imageDir
+         val directory: File = cw.getDir("imageDir", Context.MODE_PRIVATE)
+         // Create imageDir
+         val mypath = File(directory, path)
+         var out: FileOutputStream? = null
+         try {
+             out = FileOutputStream(mypath)
+             // Use the compress method on the BitMap object to write image to the OutputStream
+             bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, out)
+         } catch (e: Exception) {
+             e.printStackTrace()
+         } finally {
+             try {
+                 out?.close()
+             } catch (e: IOException) {
+                 e.printStackTrace()
+             }
+         }
         return directory.getAbsolutePath()
     }
 
@@ -53,7 +53,6 @@ class DownLoadPhoto() {
 
 
             Log.d("TAG", "isDownloading: $pathDb")
-
             Log.d("TAG", "isDownloading: ${item.path}")
 
             if (pathDb.equals(path)) {
@@ -63,8 +62,8 @@ class DownLoadPhoto() {
         return false
     }
 
-    suspend fun deleteFile(path: String): Boolean {
-        var file: File = File(path)
+    fun deleteFile(path: String): Boolean {
+        var file = File(path)
         file.delete()
         if (file.delete()) {
             return true

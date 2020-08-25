@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 
 
 @Entity(tableName = "photo")
-class PhotoEntity {
+class PhotoEntity() {
     @PrimaryKey
     @ColumnInfo(name = "path")
     var path: String = ""

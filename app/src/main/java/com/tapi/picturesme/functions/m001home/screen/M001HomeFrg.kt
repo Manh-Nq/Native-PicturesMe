@@ -49,8 +49,11 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
     lateinit var ivPrevious: ImageView
     lateinit var tbSearch: TableRow
 
+    lateinit var rvrt: RelativeLayout
+
     override fun initViews() {
-        ivPrevious = findViewById(R.id.iv_del,this)
+        rvrt = findViewById(R.id.rt_rv, this)
+        ivPrevious = findViewById(R.id.iv_del, this)
         tbSearch = findViewById(R.id.tb_search, this)
         ivSfirst = findViewById(R.id.iv_search_first, this)
         tvNoti = findViewById(R.id.tv_notilist, this)
@@ -65,7 +68,6 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
 
         initData()
         observeViewModel()
-
         recycleListener()
         searchPage()
 
@@ -92,26 +94,34 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
 
     private fun initData() {
         rvPhoto.layoutManager = GridLayoutManager(mContext, 2)
-
         photoAdapter = PhotoAdapter(mContext)
         photoAdapter.setCallBackAdapterHome(this)
         rvPhoto.adapter = photoAdapter
     }
 
     private fun observeViewModel() {
+        Log.d(TAG, "observeViewModel: check valid")
+
         if (!CommonUtils.isNetworkConnected(activity as Activity)) {
             tvNoti.visibility = View.VISIBLE
+
             showToast("internet error!!!")
-
-        } else {
-            homeViewModel.getListPhoto()?.observe(this, Observer {
-                photoAdapter.submitList(it)
-
-            })
-            homeViewModel.getIsloading().observe(this, Observer {
-                progressBarLoading.visibility = if (it) View.VISIBLE else View.GONE
-            })
+            return
         }
+        Log.d(TAG, "observeViewModel: check valid2")
+        if (homeViewModel.getListPhoto() == null) {
+            rvrt.visibility = View.GONE
+            showToast("sever error!!!")
+            return
+        }
+
+        homeViewModel.getListPhoto()?.observe(this, Observer {
+            photoAdapter.submitList(it)
+        })
+
+        homeViewModel.getIsloading().observe(this, Observer {
+            progressBarLoading.visibility = if (it) View.VISIBLE else View.GONE
+        })
 
 
     }
@@ -137,6 +147,8 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
                                 showToast("internet error")
                                 return
                             }
+                            Log.d(TAG, "onScrolled: API load more")
+
                             var i = homeViewModel.loadMore()
 
                             edtSearch.setText(i.toString())
@@ -170,9 +182,10 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
 
     private fun searchPhotobyPage(page: String) {
         if (checkValid(page)) {
-            var pageNew = page.toInt()
-            homeViewModel.getListPhotoByPage(page = pageNew)?.observe(this, Observer {
-                if (it == null) {
+
+            homeViewModel.getListPhotoByPage(page = page.toInt())?.observe(this, Observer {
+                if (it == null || it.size < 0) {
+                    Log.d(TAG, "searchPhotobyPage: ${it}")
                     tvNoti.visibility = View.VISIBLE
                     showToast("internet error!!!")
                     return@Observer
@@ -200,9 +213,7 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
             showToast("internet err")
             return false
         }
-
         return true
-
     }
 
 
@@ -235,17 +246,21 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
 
             if (!CommonUtils.isNetworkConnected(activity as Activity)) {
                 showToast("internet error")
-            } else {
-                tvDownload.visibility = View.GONE
-                ivCircle.visibility = View.GONE
-                progress.visibility = View.VISIBLE
-                ivDownload.visibility = View.GONE
-                CommonUtils.myCoroutineScope.launch {
-                    withContext(Dispatchers.Default) {
+                return
+            }
+            tvDownload.visibility = View.GONE
+            ivCircle.visibility = View.GONE
+            progress.visibility = View.VISIBLE
+            ivDownload.visibility = View.GONE
+
+            CommonUtils.myCoroutineScope.launch {
+                withContext(Dispatchers.Default) {
 
 //                    var newUrl = link + "&w=" + 300 + "&dpi=" + 1
 //                    Log.d(TAG, "URLcustom: $newUrl")
-                        Log.d(TAG, "URLOffical: $link ")
+                    Log.d(TAG, "URLOffical: $link ")
+                    /**dowmload photo from sever */
+
                         response = ApiService.retrofitService.getPhotoFromSever(link)
                         bitMap = BitmapFactory.decodeStream(response.byteStream())
 
@@ -272,7 +287,7 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
                     progress.visibility = View.GONE
                     viewBg.visibility = View.GONE
 
-                }
+
             }
 
         } catch (e: Exception) {

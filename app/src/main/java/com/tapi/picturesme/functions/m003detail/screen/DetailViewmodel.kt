@@ -28,7 +28,7 @@ class DetailViewmodel : ViewModel() {
         DownLoadPhoto().deleteFile(item.path)
 
 
-        Log.d("TAG", "deteleImage: ${item.path}")
+        Log.d("TAG", "deteleImage: ${item.path}  + ${DownLoadPhoto().deleteFile(item.path)}")
 
     }
 }
