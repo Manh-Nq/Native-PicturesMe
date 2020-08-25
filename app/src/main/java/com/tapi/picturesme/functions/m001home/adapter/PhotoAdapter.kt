@@ -81,10 +81,7 @@ class PhotoAdapter(val context: Context) :
 
 
         private fun downLoad(item: PhotoItemView) {
-            tvDownload.visibility = View.GONE
-            ivCircle.visibility = View.GONE
-            progress.visibility = View.VISIBLE
-            ivDownload.visibility = View.GONE
+
             callback.downLoad(item, progress, viewBg, ivCircle, ivDownload, tvDownload)
         }
 

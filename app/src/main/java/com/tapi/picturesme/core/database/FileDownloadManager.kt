@@ -2,10 +2,11 @@ package com.tapi.picturesme.core.database
 
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.Intent
 import android.graphics.Bitmap
-import android.net.ConnectivityManager
+import android.location.LocationManager
+import android.provider.Settings
 import android.util.Log
-import androidx.core.content.ContextCompat.getSystemService
 import com.tapi.picturesme.App
 import com.tapi.picturesme.PhotoItem
 import java.io.File
@@ -70,5 +71,7 @@ class DownLoadPhoto() {
         }
         return false
     }
+
+
 }
 

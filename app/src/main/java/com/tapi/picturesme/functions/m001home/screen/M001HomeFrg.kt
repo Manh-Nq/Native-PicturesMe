@@ -1,5 +1,6 @@
 package com.tapi.picturesme.functions.m001home.screen
 
+import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.graphics.Bitmap
@@ -8,10 +9,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.TextView
+import android.widget.*
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
@@ -47,9 +45,14 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
     lateinit var ivRemove: ImageView
     lateinit var ivSearch: ImageView
     lateinit var tvNoti: TextView
+    lateinit var ivSfirst: ImageView
+    lateinit var ivPrevious: ImageView
+    lateinit var tbSearch: TableRow
 
     override fun initViews() {
-
+        ivPrevious = findViewById(R.id.iv_del,this)
+        tbSearch = findViewById(R.id.tb_search, this)
+        ivSfirst = findViewById(R.id.iv_search_first, this)
         tvNoti = findViewById(R.id.tv_notilist, this)
         edtSearch = findViewById(R.id.edt_search, this)
         ivRemove = findViewById(R.id.iv_remove, this)
@@ -96,16 +99,20 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
     }
 
     private fun observeViewModel() {
-        homeViewModel.getListPhoto().observe(this, Observer {
-            if (it.isEmpty()) {
-                tvNoti.visibility = View.VISIBLE
-            }
-            photoAdapter.submitList(it)
+        if (!CommonUtils.isNetworkConnected(activity as Activity)) {
+            tvNoti.visibility = View.VISIBLE
+            showToast("internet error!!!")
 
-        })
-        homeViewModel.getIsloading().observe(this, Observer {
-            progressBarLoading.visibility = if (it) View.VISIBLE else View.GONE
-        })
+        } else {
+            homeViewModel.getListPhoto()?.observe(this, Observer {
+                photoAdapter.submitList(it)
+
+            })
+            homeViewModel.getIsloading().observe(this, Observer {
+                progressBarLoading.visibility = if (it) View.VISIBLE else View.GONE
+            })
+        }
+
 
     }
 
@@ -126,20 +133,18 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
                     if (!homeViewModel.loading.value!!) {
 
                         if ((visibleItemCount + passVisibleItem) > total) {
+                            if (!CommonUtils.isNetworkConnected(activity as Activity)) {
+                                showToast("internet error")
+                                return
+                            }
                             var i = homeViewModel.loadMore()
+
                             edtSearch.setText(i.toString())
-                            photoAdapter.notifyDataSetChanged()
-
                         }
-
                     }
-
                 }
-
             }
-
         })
-
     }
 
 
@@ -147,28 +152,52 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
         when (p0.id) {
             R.id.bt_album -> toMyAlbum()
             R.id.iv_remove -> edtSearch.setText("")
-//            R.id.iv_search -> searchPhotobyPage(textOf(edtSearch))
+            R.id.iv_search_first -> showTableSearch()
+            R.id.iv_del-> hideTableSearch()
+            R.id.iv_search -> searchPhotobyPage(textOf(edtSearch))
         }
     }
 
-//    private fun searchPhotobyPage(page: String) {
-//        if (checkValid(page)) {
-//            var pageNew = page.toInt()
-//            homeViewModel.getListPhotoByPage(page = pageNew).observe(this, Observer {
-//                if (it.isEmpty()) {
-//                    tvNoti.visibility = View.VISIBLE
-//                }
-//                photoAdapter.submitList(it)
-//                photoAdapter.notifyDataSetChanged()
-//            })
-//        }
-//
-//    }
+    private fun hideTableSearch() {
+        ivSfirst.visibility= View.VISIBLE
+        tbSearch.visibility = View.GONE
+    }
+
+    private fun showTableSearch() {
+        ivSfirst.visibility= View.GONE
+        tbSearch.visibility = View.VISIBLE
+    }
+
+    private fun searchPhotobyPage(page: String) {
+        if (checkValid(page)) {
+            var pageNew = page.toInt()
+            homeViewModel.getListPhotoByPage(page = pageNew)?.observe(this, Observer {
+                if (it == null) {
+                    tvNoti.visibility = View.VISIBLE
+                    showToast("internet error!!!")
+                    return@Observer
+                }
+                photoAdapter.submitList(it)
+                photoAdapter.notifyDataSetChanged()
+            })
+        }
+
+    }
 
     private fun checkValid(page: String): Boolean {
         if (page.isEmpty()) {
             edtSearch.setError("need to enter information")
             edtSearch.requestFocus()
+            return false
+        }
+        if (page.length>=10) {
+            Log.d(TAG, "checkValid: $page")
+            edtSearch.setError("number format error")
+            edtSearch.requestFocus()
+            return false
+        }
+        if (!CommonUtils.isNetworkConnected(activity as Activity)) {
+            showToast("internet err")
             return false
         }
 
@@ -178,7 +207,7 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
 
 
     private fun toMyAlbum() {
-        getStorage().page = textOf(edtSearch).toInt()
+
         mCallback.showFragment(M002GalleryFrg().TAG)
     }
 
@@ -204,39 +233,48 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
         try {
             var link = item.photoItem.picture.raw
 
-            CommonUtils.myCoroutineScope.launch {
-                withContext(Dispatchers.Default) {
+            if (!CommonUtils.isNetworkConnected(activity as Activity)) {
+                showToast("internet error")
+            } else {
+                tvDownload.visibility = View.GONE
+                ivCircle.visibility = View.GONE
+                progress.visibility = View.VISIBLE
+                ivDownload.visibility = View.GONE
+                CommonUtils.myCoroutineScope.launch {
+                    withContext(Dispatchers.Default) {
 
 //                    var newUrl = link + "&w=" + 300 + "&dpi=" + 1
 //                    Log.d(TAG, "URLcustom: $newUrl")
-                    Log.d(TAG, "URLOffical: $link ")
-                    response = ApiService.retrofitService.getPhotoFromSever(link)
-                    bitMap = BitmapFactory.decodeStream(response.byteStream())
+                        Log.d(TAG, "URLOffical: $link ")
+                        response = ApiService.retrofitService.getPhotoFromSever(link)
+                        bitMap = BitmapFactory.decodeStream(response.byteStream())
 
 
-                    /** save image to internal */
-                    val path = link.substring(link.indexOf('-') + 1, link.indexOf('?')) + ".png"
-                    try {
-                        DownLoadPhoto().saveToInternalStorage(bitMap, path)
-                    } catch (e: Exception) {
-                        showToast("Not find File path !!!")
+                        /** save image to internal */
+                        val path = link.substring(link.indexOf('-') + 1, link.indexOf('?')) + ".png"
+                        try {
+                            DownLoadPhoto().saveToInternalStorage(bitMap, path)
+                        } catch (e: Exception) {
+                            showToast("Not find File path !!!")
+                        }
+
+                        val cw = ContextWrapper(App.instance.getApplicationContext())
+                        val directory: File = cw.getDir("imageDir", Context.MODE_PRIVATE)
+
+                        var photo = PhotoEntity()
+                        photo.path = "$directory/$path"
+                        photo.isDownload = true
+                        App.photoDatabase.photoDAO.savePhoto(photo)
+                        item.isDownloaded = true
+
                     }
-
-                    val cw = ContextWrapper(App.instance.getApplicationContext())
-                    val directory: File = cw.getDir("imageDir", Context.MODE_PRIVATE)
-
-                    var photo = PhotoEntity()
-                    photo.path = "$directory/$path"
-                    photo.isDownload = true
-                    App.photoDatabase.photoDAO.savePhoto(photo)
-                    item.isDownloaded = true
+                    showToast("download success")
+                    progress.visibility = View.GONE
+                    viewBg.visibility = View.GONE
 
                 }
-                showToast("download success")
-                progress.visibility = View.GONE
-                viewBg.visibility = View.GONE
-
             }
+
         } catch (e: Exception) {
             e.printStackTrace()
             showToast("download fail")

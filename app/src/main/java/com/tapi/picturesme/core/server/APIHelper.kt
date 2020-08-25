@@ -12,7 +12,7 @@ import retrofit2.http.Url
 import java.util.concurrent.TimeUnit
 
 private const val BASE_URL = "https://api.unsplash.com/"
-private const val CLIENT_ID = "Dq7t7v4s6jR-5hwHV1r9v8wmhlaY-NIi4zlbriJTH44"
+private const val CLIENT_ID = "qvCbQbUZ7aYALe92pRjVIgmah6s4Z37x6wVhkQO6VxU"
 
 
 val gson = GsonBuilder()
