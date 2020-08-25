@@ -15,6 +15,10 @@ private const val BASE_URL = "https://api.unsplash.com/"
 private const val CLIENT_ID = "Dq7t7v4s6jR-5hwHV1r9v8wmhlaY-NIi4zlbriJTH44"
 
 
+val gson = GsonBuilder()
+    .setLenient()
+    .create()
+
 
 val client = OkHttpClient.Builder()
     .callTimeout(60, TimeUnit.SECONDS)
@@ -22,7 +26,7 @@ val client = OkHttpClient.Builder()
 
 
 private val retrofit = Retrofit.Builder()
-    .addConverterFactory(GsonConverterFactory.create())
+    .addConverterFactory(GsonConverterFactory.create(gson))
     .client(client)
     .baseUrl(BASE_URL)
     .build()

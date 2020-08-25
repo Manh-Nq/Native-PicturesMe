@@ -5,5 +5,6 @@ import com.tapi.picturesme.functions.m001home.PhotoItemView
 
 object StorageCommon {
     var currentTag: String = ""
+    var page: Int = 0
     lateinit var photoItem: PhotoEntity
 }

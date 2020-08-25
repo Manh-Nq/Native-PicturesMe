@@ -10,6 +10,7 @@ import com.tapi.picturesme.App
 import com.tapi.picturesme.PhotoItem
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
 
 
 class DownLoadPhoto() {
@@ -32,7 +33,7 @@ class DownLoadPhoto() {
         } finally {
             try {
                 out?.close()
-            } catch (e: Exception) {
+            } catch (e: IOException) {
                 e.printStackTrace()
             }
         }
@@ -44,6 +45,7 @@ class DownLoadPhoto() {
         var listDB = App.photoDatabase.photoDAO.getListPhoto()
         for (item in listDB) {
             val link = photoItem.picture.raw
+            Log.d("TAG", "isDownloaded11: $link")
             val path = link.substring(link.indexOf('-') + 1, link.indexOf('?')) + ".png"
             Log.d("TAG", "isDownloaded: $path")
             var pathDb = item.path.substring(item.path.lastIndexOf('/') + 1, item.path.length)

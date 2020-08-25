@@ -4,8 +4,11 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.View
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -40,20 +43,48 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
     lateinit var bitMap: Bitmap
     lateinit var progressBarLoading: ProgressBar
 
+    lateinit var edtSearch: EditText
+    lateinit var ivRemove: ImageView
+    lateinit var ivSearch: ImageView
+    lateinit var tvNoti: TextView
+
     override fun initViews() {
 
+        tvNoti = findViewById(R.id.tv_notilist, this)
+        edtSearch = findViewById(R.id.edt_search, this)
+        ivRemove = findViewById(R.id.iv_remove, this)
+        ivSearch = findViewById(R.id.iv_search, this)
         progressBarLoading = findViewById(R.id.progress_loadmore, this)
         btAlbum = findViewById(R.id.bt_album, this)
         homeViewModel = ViewModelProvider(this).get(HomeViewModel().TAG)
         rvPhoto = findViewById(R.id.rv_photo, this)
 
+
         initData()
         observeViewModel()
 
-
         recycleListener()
+        searchPage()
 
+    }
 
+    private fun searchPage() {
+        edtSearch.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+
+                //
+                if (textOf(edtSearch).length > 0) {
+//                    ivSearch.visibility = View.VISIBLE
+                    ivRemove.visibility = View.VISIBLE
+                } else {
+                    ivRemove.visibility = View.GONE
+//                    ivSearch.visibility = View.GONE
+                }
+            }
+
+            override fun afterTextChanged(s: Editable) {}
+        })
     }
 
     private fun initData() {
@@ -65,7 +96,10 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
     }
 
     private fun observeViewModel() {
-        homeViewModel.getListData().observe(this, Observer {
+        homeViewModel.getListPhoto().observe(this, Observer {
+            if (it.isEmpty()) {
+                tvNoti.visibility = View.VISIBLE
+            }
             photoAdapter.submitList(it)
 
         })
@@ -92,7 +126,8 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
                     if (!homeViewModel.loading.value!!) {
 
                         if ((visibleItemCount + passVisibleItem) > total) {
-                            homeViewModel.loadMore()
+                            var i = homeViewModel.loadMore()
+                            edtSearch.setText(i.toString())
                             photoAdapter.notifyDataSetChanged()
 
                         }
@@ -111,11 +146,39 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
     override fun onClick(p0: View) {
         when (p0.id) {
             R.id.bt_album -> toMyAlbum()
+            R.id.iv_remove -> edtSearch.setText("")
+//            R.id.iv_search -> searchPhotobyPage(textOf(edtSearch))
         }
+    }
+
+//    private fun searchPhotobyPage(page: String) {
+//        if (checkValid(page)) {
+//            var pageNew = page.toInt()
+//            homeViewModel.getListPhotoByPage(page = pageNew).observe(this, Observer {
+//                if (it.isEmpty()) {
+//                    tvNoti.visibility = View.VISIBLE
+//                }
+//                photoAdapter.submitList(it)
+//                photoAdapter.notifyDataSetChanged()
+//            })
+//        }
+//
+//    }
+
+    private fun checkValid(page: String): Boolean {
+        if (page.isEmpty()) {
+            edtSearch.setError("need to enter information")
+            edtSearch.requestFocus()
+            return false
+        }
+
+        return true
+
     }
 
 
     private fun toMyAlbum() {
+        getStorage().page = textOf(edtSearch).toInt()
         mCallback.showFragment(M002GalleryFrg().TAG)
     }
 
@@ -153,7 +216,11 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
 
                     /** save image to internal */
                     val path = link.substring(link.indexOf('-') + 1, link.indexOf('?')) + ".png"
-                    DownLoadPhoto().saveToInternalStorage(bitMap, path)
+                    try {
+                        DownLoadPhoto().saveToInternalStorage(bitMap, path)
+                    } catch (e: Exception) {
+                        showToast("Not find File path !!!")
+                    }
 
                     val cw = ContextWrapper(App.instance.getApplicationContext())
                     val directory: File = cw.getDir("imageDir", Context.MODE_PRIVATE)
@@ -163,7 +230,6 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
                     photo.isDownload = true
                     App.photoDatabase.photoDAO.savePhoto(photo)
                     item.isDownloaded = true
-
 
                 }
                 showToast("download success")

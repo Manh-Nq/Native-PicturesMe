@@ -24,29 +24,37 @@ class PhotoAdapter(val context: Context) :
 
     override fun onBindViewHolder(holder: PhotoHolder, position: Int) {
         var photoItemView: PhotoItemView = getItem(position)
-
+        showUIItem(holder)
         if (!photoItemView.isDownloaded) {
             Glide.with(context).load(photoItemView.photoItem.picture.thumb)
                 .override(holder.widthView, holder.widthView + 20).into(holder.ivImage)
-
-            holder.ivCircle.visibility = View.VISIBLE
-            holder.ivDownload.visibility = View.VISIBLE
-            holder.viewBg.visibility = View.VISIBLE
-            holder.tvDownload.visibility = View.VISIBLE
+            showUIItem(holder)
 
         } else if (photoItemView.isDownloaded) {
 
             Glide.with(context).load(photoItemView.photoItem.picture.thumb)
                 .override(holder.widthView, holder.widthView).into(holder.ivImage)
-            holder.ivCircle.visibility = View.GONE
-            holder.ivDownload.visibility = View.GONE
-            holder.viewBg.visibility = View.GONE
-            holder.progress.visibility = View.GONE
-            holder.tvDownload.visibility = View.GONE
+            hideUIItem(holder)
         }
         holder.ivImage.tag = photoItemView
 
     }
+
+    private fun showUIItem(holder: PhotoAdapter.PhotoHolder) {
+        holder.ivCircle.visibility = View.VISIBLE
+        holder.ivDownload.visibility = View.VISIBLE
+        holder.viewBg.visibility = View.VISIBLE
+        holder.tvDownload.visibility = View.VISIBLE
+    }
+
+    private fun hideUIItem(holder: PhotoHolder) {
+        holder.ivCircle.visibility = View.GONE
+        holder.ivDownload.visibility = View.GONE
+        holder.viewBg.visibility = View.GONE
+        holder.tvDownload.visibility = View.GONE
+
+    }
+
 
     inner class PhotoHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
 
@@ -68,9 +76,9 @@ class PhotoAdapter(val context: Context) :
             val item = ivImage.tag as PhotoItemView
             when (p0.id) {
                 R.id.iv_download -> downLoad(item)
-
             }
         }
+
 
         private fun downLoad(item: PhotoItemView) {
             tvDownload.visibility = View.GONE

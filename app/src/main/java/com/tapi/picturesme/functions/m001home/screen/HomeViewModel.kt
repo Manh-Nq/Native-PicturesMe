@@ -25,54 +25,78 @@ open class HomeViewModel : ViewModel() {
         get() = _loading
 
 
+    fun getListPhoto(): LiveData<List<PhotoItemView>> {
+        try {
+            viewModelScope.launch {
+                _loading.value = true
+                _images.value = ApiService.retrofitService.getPictures(page = currentPage).map {
+                    Log.d("TAG", "comfirmPhoto: $it")
+                    if (DownLoadPhoto().isDownloaded(it)) {
+                        PhotoItemView(it, true)
 
-
-    init {
-
-        viewModelScope.launch {
-            _loading.value = true
-            _images.value = ApiService.retrofitService.getPictures(page = currentPage).map {
-                Log.d("TAG", "comfirmPhoto: $it")
-                if (DownLoadPhoto().isDownloaded(it)) {
-                    PhotoItemView(it, true)
-
-                } else {
-                    PhotoItemView(it, false)
+                    } else {
+                        PhotoItemView(it, false)
+                    }
                 }
+                _loading.value = false
             }
-            _loading.value = false
+        } catch (e: Exception) {
+            
         }
-
-    }
-
-    fun getListData(): LiveData<List<PhotoItemView>> {
         return images
     }
+
+    fun getListPhotoByPage(page:Int): LiveData<List<PhotoItemView>> {
+        try {
+            viewModelScope.launch {
+                _loading.value = true
+                _images.value = ApiService.retrofitService.getPictures(page = page).map {
+                    Log.d("TAG", "comfirmPhoto: $it")
+                    if (DownLoadPhoto().isDownloaded(it)) {
+                        PhotoItemView(it, true)
+
+                    } else {
+                        PhotoItemView(it, false)
+                    }
+                }
+                _loading.value = false
+            }
+        } catch (e: Exception) {
+
+        }
+        return images
+    }
+
 
     fun getIsloading(): LiveData<Boolean> {
         return loading
     }
 
-    fun loadMore() {
-     currentPage++
+    fun loadMore():Int {
+        currentPage++
         viewModelScope.launch {
-            _loading.value = true
-            val moreList = ApiService.retrofitService.getPictures(page = currentPage).map {
-                if (DownLoadPhoto().isDownloaded(it)) {
-                    PhotoItemView(it, true)
+            try {
+                _loading.value = true
+                val moreList = ApiService.retrofitService.getPictures(page = currentPage).map {
+                    if (DownLoadPhoto().isDownloaded(it)) {
+                        PhotoItemView(it, true)
 
-                } else {
-                    PhotoItemView(it, false)
+                    } else {
+                        PhotoItemView(it, false)
+                    }
                 }
-            }
-            val currList = _images.value?.toMutableList()
-            currList?.let {
-                currList.addAll(moreList)
-                _images.value = currList
-            }
+                val currList = _images.value?.toMutableList()
+                currList?.let {
+                    currList.addAll(moreList)
+                    _images.value = currList
+                }
 
-            _loading.value = false
+                _loading.value = false
+            } catch (e: Exception) {
+
+            }
         }
+        return currentPage
     }
 
 }

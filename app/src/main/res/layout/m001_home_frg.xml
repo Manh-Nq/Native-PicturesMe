@@ -7,11 +7,68 @@
     android:gravity="center"
     android:orientation="vertical">
 
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:background="@color/alpha">
+
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/edt_search"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:inputType="number"
+                android:layout_marginHorizontal="16dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:hint="Enter the search page"
+                android:textSize="14dp" />
+
+            <ImageView
+                android:id="@+id/iv_remove"
+                android:layout_width="30dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerInParent="true"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="16dp"
+                android:padding="2dp"
+                android:visibility="gone"
+                android:src="@drawable/ic_remove"
+                />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/iv_search"
+            android:layout_width="30dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_baseline_search_24"
+            />
+
+
+    </TableRow>
+
     <RelativeLayout
         android:id="@+id/rt_rv"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
+        <TextView
+            android:id="@+id/tv_notilist"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:gravity="center"
+            android:layout_centerInParent="true"
+            android:text="page does not contain data!!!"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_photo"

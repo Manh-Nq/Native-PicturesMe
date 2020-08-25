@@ -17,4 +17,5 @@
     <color name="colorGreen">#45BC39</color>
     <color name="colorblackAlpha">#57CAC9C9</color>
     <color name="colorBlackAlpha">#59414040</color>
+    <color name="alpha">#00FFFFFF</color>
 </resources>
