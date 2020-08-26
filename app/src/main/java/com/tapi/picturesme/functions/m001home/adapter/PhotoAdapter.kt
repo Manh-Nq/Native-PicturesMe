@@ -26,8 +26,10 @@ class PhotoAdapter(val context: Context) :
         var photoItemView: PhotoItemView = getItem(position)
         showUIItem(holder)
         if (!photoItemView.isDownloaded) {
+            holder.progress.visibility= View.VISIBLE
             Glide.with(context).load(photoItemView.photoItem.picture.thumb)
                 .override(holder.widthView, holder.widthView + 20).into(holder.ivImage)
+            holder.progress.visibility= View.GONE
             showUIItem(holder)
 
         } else if (photoItemView.isDownloaded) {

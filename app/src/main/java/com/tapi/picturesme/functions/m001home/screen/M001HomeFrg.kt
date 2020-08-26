@@ -25,6 +25,7 @@ import com.tapi.picturesme.functions.m001home.adapter.PhotoAdapter
 import com.tapi.picturesme.functions.m002gallery.screen.M002GalleryFrg
 import com.tapi.picturesme.utils.CommonUtils
 import com.tapi.picturesme.view.base.BaseFragment
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -40,7 +41,6 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
     lateinit var response: ResponseBody
     lateinit var bitMap: Bitmap
     lateinit var progressBarLoading: ProgressBar
-
     lateinit var edtSearch: EditText
     lateinit var ivRemove: ImageView
     lateinit var ivSearch: ImageView
@@ -48,11 +48,14 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
     lateinit var ivSfirst: ImageView
     lateinit var ivPrevious: ImageView
     lateinit var tbSearch: TableRow
-
+    lateinit var lnNotierr: LinearLayout
+    lateinit var tvNotierr: TextView
     lateinit var rvrt: RelativeLayout
 
     override fun initViews() {
         rvrt = findViewById(R.id.rt_rv, this)
+        lnNotierr = findViewById(R.id.ln_noti_err, this)
+        tvNotierr = findViewById(R.id.tv_notierr, this)
         ivPrevious = findViewById(R.id.iv_del, this)
         tbSearch = findViewById(R.id.tb_search, this)
         ivSfirst = findViewById(R.id.iv_search_first, this)
@@ -108,22 +111,35 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
             showToast("internet error!!!")
             return
         }
-        Log.d(TAG, "observeViewModel: check valid2")
-        if (homeViewModel.getListPhoto() == null) {
-            rvrt.visibility = View.GONE
-            showToast("sever error!!!")
-            return
-        }
 
         homeViewModel.getListPhoto()?.observe(this, Observer {
             photoAdapter.submitList(it)
         })
 
         homeViewModel.getIsloading().observe(this, Observer {
-            progressBarLoading.visibility = if (it) View.VISIBLE else View.GONE
+            progressBarLoading.visibility = if (it == 1) View.VISIBLE else View.GONE
+            Log.d(TAG, "observeViewModel: $it")
+            when (it) {
+                2 -> showNotiErr("401")
+                3 -> showNotiErr("404")
+                4 -> showNotiErr("500")
+                5 -> showNotiErr("504")
+                6 -> showNotiErr("error")
+                7 -> showNotiErr("Disconnect")
+            }
         })
 
 
+    }
+
+
+    private fun showNotiErr(err: String) {
+        lnNotierr.visibility = View.VISIBLE
+        tvNotierr.text = err
+        ivSfirst.visibility = View.VISIBLE
+        tbSearch.visibility = View.GONE
+        rvrt.visibility = View.GONE
+        showToast("sever error!!!")
     }
 
 
@@ -140,7 +156,7 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
                     val passVisibleItem = gridLayoutManager.findFirstCompletelyVisibleItemPosition()
                     val total = photoAdapter.itemCount
 
-                    if (!homeViewModel.loading.value!!) {
+                    if (homeViewModel.loading.value == 0) {
 
                         if ((visibleItemCount + passVisibleItem) > total) {
                             if (!CommonUtils.isNetworkConnected(activity as Activity)) {
@@ -184,11 +200,20 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
         if (checkValid(page)) {
 
             homeViewModel.getListPhotoByPage(page = page.toInt())?.observe(this, Observer {
+
+                if (homeViewModel.getIsloading().value != 1 && homeViewModel.getIsloading().value != 0) {
+                    lnNotierr.visibility = View.VISIBLE
+                    rvrt.visibility = View.GONE
+                    tbSearch.visibility = View.GONE
+                    Log.d(TAG, "searchPhotobyPag11e: ${homeViewModel.getIsloading().value}")
+                    showToast("sever error!!!")
+                }
+
                 if (it == null || it.size < 0) {
-                    Log.d(TAG, "searchPhotobyPage: ${it}")
+                    Log.d(TAG, "searchPhotobyPage: ${it.size}")
                     tvNoti.visibility = View.VISIBLE
                     showToast("internet error!!!")
-                    return@Observer
+
                 }
                 photoAdapter.submitList(it)
                 photoAdapter.notifyDataSetChanged()
@@ -241,46 +266,54 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
         ivDownload: ImageView,
         tvDownload: TextView
     ) {
-        try {
-            var link = item.photoItem.picture.raw
+        val handler = CoroutineExceptionHandler { _, exception ->
+            Log.d("TAG", "CoroutineExceptionHandler got $exception")
+            showToast("download fail")
+            progress.visibility = View.GONE
+            ivCircle.visibility = View.VISIBLE
+            ivDownload.visibility = View.VISIBLE
+            tvDownload.visibility = View.VISIBLE
+        }
 
-            if (!CommonUtils.isNetworkConnected(activity as Activity)) {
-                showToast("internet error")
-                return
-            }
-            tvDownload.visibility = View.GONE
-            ivCircle.visibility = View.GONE
-            progress.visibility = View.VISIBLE
-            ivDownload.visibility = View.GONE
+        var link = item.photoItem.picture.raw
 
-            CommonUtils.myCoroutineScope.launch {
-                withContext(Dispatchers.Default) {
+        if (!CommonUtils.isNetworkConnected(activity as Activity)) {
+            showToast("internet error")
+            return
+        }
+        tvDownload.visibility = View.GONE
+        ivCircle.visibility = View.GONE
+        progress.visibility = View.VISIBLE
+        ivDownload.visibility = View.GONE
+
+        CommonUtils.myCoroutineScope.launch(handler) {
+            withContext(Dispatchers.Default) {
 
 //                    var newUrl = link + "&w=" + 300 + "&dpi=" + 1
 //                    Log.d(TAG, "URLcustom: $newUrl")
-                    Log.d(TAG, "URLOffical: $link ")
-                    /**dowmload photo from sever */
+                Log.d(TAG, "URLOffical: $link ")
+                /**dowmload photo from sever */
 
-                        response = ApiService.retrofitService.getPhotoFromSever(link)
-                        bitMap = BitmapFactory.decodeStream(response.byteStream())
+                response = ApiService.retrofitService.getPhotoFromSever(link)
+                bitMap = BitmapFactory.decodeStream(response.byteStream())
 
 
-                        /** save image to internal */
-                        val path = link.substring(link.indexOf('-') + 1, link.indexOf('?')) + ".png"
-                        try {
-                            DownLoadPhoto().saveToInternalStorage(bitMap, path)
-                        } catch (e: Exception) {
-                            showToast("Not find File path !!!")
-                        }
+                /** save image to internal */
+                val path = link.substring(link.indexOf('-') + 1, link.indexOf('?')) + ".png"
+                try {
+                    DownLoadPhoto().saveToInternalStorage(bitMap, path)
+                } catch (e: Exception) {
+                    showToast("Not find File path !!!")
+                }
 
-                        val cw = ContextWrapper(App.instance.getApplicationContext())
-                        val directory: File = cw.getDir("imageDir", Context.MODE_PRIVATE)
+                val cw = ContextWrapper(App.instance.getApplicationContext())
+                val directory: File = cw.getDir("imageDir", Context.MODE_PRIVATE)
 
-                        var photo = PhotoEntity()
-                        photo.path = "$directory/$path"
-                        photo.isDownload = true
-                        App.photoDatabase.photoDAO.savePhoto(photo)
-                        item.isDownloaded = true
+                var photo = PhotoEntity()
+                photo.path = "$directory/$path"
+                photo.isDownload = true
+                App.photoDatabase.photoDAO.savePhoto(photo)
+                item.isDownloaded = true
 
                     }
                     showToast("download success")
@@ -290,14 +323,6 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
 
             }
 
-        } catch (e: Exception) {
-            e.printStackTrace()
-            showToast("download fail")
-            progress.visibility = View.GONE
-            ivCircle.visibility = View.VISIBLE
-            ivDownload.visibility = View.VISIBLE
-            tvDownload.visibility = View.VISIBLE
-        }
 
     }
 
