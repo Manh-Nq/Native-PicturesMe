@@ -52,6 +52,7 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
     lateinit var rvrt: RelativeLayout
 
     override fun initViews() {
+
         rvrt = findViewById(R.id.rt_rv, this)
         ivPrevious = findViewById(R.id.iv_del, this)
         tbSearch = findViewById(R.id.tb_search, this)
@@ -65,11 +66,12 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
         homeViewModel = ViewModelProvider(this).get(HomeViewModel().TAG)
         rvPhoto = findViewById(R.id.rv_photo, this)
 
-
         initData()
         observeViewModel()
         recycleListener()
         searchPage()
+
+
 
     }
 
@@ -173,6 +175,7 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
     private fun hideTableSearch() {
         ivSfirst.visibility= View.VISIBLE
         tbSearch.visibility = View.GONE
+
     }
 
     private fun showTableSearch() {
@@ -218,6 +221,9 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
 
 
     private fun toMyAlbum() {
+        if (!textOf(edtSearch).isEmpty()) {
+            getStorage().page = textOf(edtSearch).toInt()
+        }
 
         mCallback.showFragment(M002GalleryFrg().TAG)
     }

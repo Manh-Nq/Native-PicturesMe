@@ -1,5 +1,6 @@
 package com.tapi.picturesme.functions.m003detail.screen
 
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
@@ -19,12 +20,11 @@ class M003DetailFrg : BaseFragment() {
     lateinit var ivImage: ImageView
     lateinit var ivDelete: ImageView
     lateinit var ivBack: ImageView
-    lateinit var item: PhotoEntity
     lateinit var viewModel: DetailViewmodel
 
     override fun initViews() {
         viewModel = ViewModelProvider(this).get(DetailViewmodel::class.java)
-        item = getStorage().photoItem
+
         ivImage = findViewById(R.id.iv_detail, this)
         ivDelete = findViewById(R.id.iv_delete, this)
         ivBack = findViewById(R.id.iv_back, this)
@@ -34,15 +34,15 @@ class M003DetailFrg : BaseFragment() {
 
     private fun obseverViewmodel() {
         viewModel.getImage().observe(this, Observer {
+
             val requestOptions = RequestOptions()
                 .diskCacheStrategy(DiskCacheStrategy.NONE) // because file name is always same
                 .skipMemoryCache(true)
                 .centerInside()
-
-            Glide.with(mContext).load(item.path).centerCrop().apply(requestOptions).centerCrop()
-                .into(
-                    ivImage
-                )
+            Log.d(TAG, "obseverViewmodel: ${it.path}")
+            Log.d(TAG, "obseverViewmodel: ${it.isDownload}")
+            Glide.with(mContext).load(it.path).centerCrop().apply(requestOptions).centerCrop()
+                .into(ivImage)
         })
     }
 
@@ -69,7 +69,7 @@ class M003DetailFrg : BaseFragment() {
     }
 
     private fun deleteFromDatabase() {
-        viewModel.deteleImage(item)
+        viewModel.deteleImage()
         mCallback.showFragment(M002GalleryFrg().TAG)
     }
 

@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tapi.picturesme.core.database.DownLoadPhoto
+import com.tapi.picturesme.core.server.APIHelper
 import com.tapi.picturesme.core.server.ApiService
 import com.tapi.picturesme.functions.m001home.PhotoItemView
 import kotlinx.coroutines.launch
@@ -29,9 +30,9 @@ open class HomeViewModel : ViewModel() {
             Log.d("TAG", "loadList: API listPhoto calling....... ")
             var job = viewModelScope.launch {
 
-                Log.d("TAG", "getListPhoto: start call API")
+                Log.d("TAG", "loadList: start call API")
 
-                var listData = ApiService.retrofitService.getPictures(page = currentPage)
+                var listData = APIHelper().getListData()
 
                 _loading.value = true
                 listData?.let {
@@ -49,12 +50,9 @@ open class HomeViewModel : ViewModel() {
                 }
                 _loading.value = false
             }
-            if (!job.isActive) {
-                return null
-            }
             return images
         } catch (e: IllegalStateException) {
-            Log.d("TAG", "getListPhoto: ${e.printStackTrace()}")
+            Log.d("TAG", "loadList: ${e.printStackTrace()}")
             return null
 
         } catch (e: Exception) {
@@ -136,6 +134,7 @@ open class HomeViewModel : ViewModel() {
         }
 
     }
+
 
 }
 

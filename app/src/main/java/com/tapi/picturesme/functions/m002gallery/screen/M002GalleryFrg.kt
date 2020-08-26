@@ -20,13 +20,15 @@ class M002GalleryFrg : BaseFragment(), GalleryAdapter.clickItemListener {
     lateinit var galleryAdapter: GalleryAdapter
     lateinit var viewModel: GalleryViewModel
     lateinit var ivBack: ImageView
-
+    private var numPage = 0;
 
     override fun initViews() {
+        numPage = getStorage().page
         ivBack = findViewById(R.id.iv_back, this)
         viewModel = ViewModelProvider(this).get(GalleryViewModel::class.java)
         rvGallery = findViewById(R.id.rv_gallery, this)
         initData()
+
         observeViewModel()
     }
 
@@ -54,6 +56,7 @@ class M002GalleryFrg : BaseFragment(), GalleryAdapter.clickItemListener {
     }
 
     private fun backToFrg() {
+        getStorage().page = numPage
         mCallback.showFragment(M001HomeFrg().TAG)
     }
 

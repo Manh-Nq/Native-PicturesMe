@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import com.tapi.picturesme.R
+import com.tapi.picturesme.functions.m001home.screen.M001HomeFrg
 import com.tapi.picturesme.utils.CommonUtils
 import com.tapi.picturesme.view.base.BaseActivity
 import com.tapi.picturesme.view.base.BaseFragment
@@ -19,6 +20,7 @@ import kotlinx.android.synthetic.main.home_activity.*
 
 class HomeActivity : BaseActivity(), View.OnClickListener {
 
+    val m001Frg: M001HomeFrg = M001HomeFrg()
 
     lateinit var tvNoti: TextView
 
@@ -84,6 +86,7 @@ class HomeActivity : BaseActivity(), View.OnClickListener {
         }
 
     }
+
 
     override fun onClick(p0: View?) {
 
