@@ -22,6 +22,7 @@ class M003DetailFrg : BaseFragment() {
     lateinit var item: PhotoEntity
     lateinit var viewModel: DetailViewmodel
 
+
     override fun initViews() {
         viewModel = ViewModelProvider(this).get(DetailViewmodel::class.java)
         item = getStorage().photoItem
@@ -54,7 +55,7 @@ class M003DetailFrg : BaseFragment() {
     }
 
     private fun backToFrg() {
-        mCallback.showFragment(M002GalleryFrg().TAG)
+        mCallback.showFragment(M002GalleryFrg().TAG, false)
     }
 
     private fun showDialogDelete() {
@@ -70,7 +71,7 @@ class M003DetailFrg : BaseFragment() {
 
     private fun deleteFromDatabase() {
         viewModel.deteleImage(item)
-        mCallback.showFragment(M002GalleryFrg().TAG)
+        mCallback.showFragment(M002GalleryFrg().TAG, false)
     }
 
     override fun getLayoutByID(): Int {
@@ -78,7 +79,7 @@ class M003DetailFrg : BaseFragment() {
     }
 
     override fun showPreviousFrg() {
-        mCallback.showFragment(M002GalleryFrg().TAG)
+        mCallback.showFragment(M002GalleryFrg().TAG, false)
     }
 
 }

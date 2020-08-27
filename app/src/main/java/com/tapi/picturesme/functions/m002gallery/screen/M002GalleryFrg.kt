@@ -54,7 +54,7 @@ class M002GalleryFrg : BaseFragment(), GalleryAdapter.clickItemListener {
     }
 
     private fun backToFrg() {
-        mCallback.showFragment(M001HomeFrg().TAG)
+        mCallback.showFragment(M001HomeFrg().TAG,false)
     }
 
     override fun getLayoutByID(): Int {
@@ -62,12 +62,12 @@ class M002GalleryFrg : BaseFragment(), GalleryAdapter.clickItemListener {
     }
 
     override fun showPreviousFrg() {
-        mCallback.showFragment(M001HomeFrg().TAG)
+        mCallback.showFragment(M001HomeFrg().TAG, false)
     }
 
     override fun showDetail(item: PhotoEntity) {
         getStorage().photoItem = item
-        mCallback.showFragment(M003DetailFrg().TAG)
+        mCallback.showFragment(M003DetailFrg().TAG, false)
 
     }
 

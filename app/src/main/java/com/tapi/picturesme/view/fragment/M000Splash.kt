@@ -1,13 +1,5 @@
 package com.tapi.picturesme.view.fragment
 
-import android.app.Activity
-import android.content.Context
-import android.net.ConnectivityManager
-import android.os.Build
-import android.os.StrictMode
-import android.util.Log
-import android.view.View
-import android.widget.TextView
 import com.tapi.picturesme.R
 import com.tapi.picturesme.functions.m001home.screen.M001HomeFrg
 import com.tapi.picturesme.utils.CommonUtils
@@ -22,7 +14,7 @@ class M000Splash : BaseFragment() {
 
         CommonUtils.myCoroutineScope.launch {
             delay(2000)
-            mCallback.showFragment(M001HomeFrg().TAG)
+            mCallback.showFragment(M001HomeFrg().TAG, true)
 
         }
 

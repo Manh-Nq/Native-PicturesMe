@@ -19,10 +19,6 @@ class GalleryAdapter(val context: Context) :
         setHasStableIds(true)
     }
 
-    override fun getItemId(position: Int): Long {
-        return super.getItemId(position)
-    }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GalleryHolder {
         var item: View = LayoutInflater.from(context).inflate(R.layout.item_gallery, parent, false)
         return GalleryHolder(item)

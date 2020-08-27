@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -51,6 +52,9 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
     lateinit var lnNotierr: LinearLayout
     lateinit var tvNotierr: TextView
     lateinit var rvrt: RelativeLayout
+
+
+
 
     override fun initViews() {
         rvrt = findViewById(R.id.rt_rv, this)
@@ -244,7 +248,7 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
 
     private fun toMyAlbum() {
 
-        mCallback.showFragment(M002GalleryFrg().TAG)
+        mCallback.showFragment(M002GalleryFrg().TAG, false)
     }
 
     // TODO: 19-Aug-20
@@ -289,12 +293,12 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
         CommonUtils.myCoroutineScope.launch(handler) {
             withContext(Dispatchers.Default) {
 
-//                    var newUrl = link + "&w=" + 300 + "&dpi=" + 1
-//                    Log.d(TAG, "URLcustom: $newUrl")
+                    var newUrl = link + "&w=" + 300 + "&dpi=" + 1
+                    Log.d(TAG, "URLcustom: $newUrl")
                 Log.d(TAG, "URLOffical: $link ")
                 /**dowmload photo from sever */
 
-                response = ApiService.retrofitService.getPhotoFromSever(link)
+                response = ApiService.retrofitService.getPhotoFromSever(newUrl)
                 bitMap = BitmapFactory.decodeStream(response.byteStream())
 
 

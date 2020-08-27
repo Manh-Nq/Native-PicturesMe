@@ -35,7 +35,7 @@ class HomeActivity : BaseActivity(), View.OnClickListener {
             showToast("thiết bị của bạn chưa được kết nối internet", Toast.LENGTH_LONG)
         } else {
             Log.d("TAG", "delaytime: this is check network done and show frg")
-            showFragment(M000Splash().TAG)
+            showFragment(M000Splash().TAG,false)
 
         }
 
