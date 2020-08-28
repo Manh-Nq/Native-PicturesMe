@@ -12,8 +12,8 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
 
 open class HomeViewModel : ViewModel() {
-    val TAG = HomeViewModel::class.java
 
+    private var listData : ArrayList<PhotoItemView> = ArrayList()
     private var _images: MutableLiveData<List<PhotoItemView>> = MutableLiveData()
     val images: LiveData<List<PhotoItemView>>
         get() = _images
@@ -25,7 +25,7 @@ open class HomeViewModel : ViewModel() {
         get() = _loading
 
 
-    fun getListPhoto(): LiveData<List<PhotoItemView>>? {
+    fun getListPhoto(): LiveData<List<PhotoItemView>> {
         val handler = CoroutineExceptionHandler { _, exception ->
             _loading.value = 7
         }
@@ -58,6 +58,35 @@ open class HomeViewModel : ViewModel() {
         return images
     }
 
+
+    fun updateData() {
+
+        viewModelScope.launch {
+            var index = 0
+            var listTmp = mutableListOf<PhotoItemView>()
+            if (_images.value != null) {
+                for (item in _images.value!!) {
+                    if (!DownLoadPhoto().isDownloaded(item.photoItem)) {
+                        var newPhotoItemView = item.copy()
+                        newPhotoItemView.isDownloaded = false
+                        var photoItemNew = newPhotoItemView.photoItem.copy()
+                        newPhotoItemView.photoItem = photoItemNew
+
+                        listData = (_images.value as ArrayList<PhotoItemView>?)!!
+
+                        listData.set(index, newPhotoItemView)
+
+
+//                        listTmp.add(newPhotoItemView)
+//                        _images.value = listData
+                        _images.postValue(listData)
+                    }
+                    index++
+                }
+            }
+        }
+    }
+
     private fun checkValide(code: Int) {
         if (code == 200) {
             _loading.value = 1
@@ -86,7 +115,7 @@ open class HomeViewModel : ViewModel() {
 
     }
 
-    fun getListPhotoByPage(page: Int): LiveData<List<PhotoItemView>>? {
+    fun getListPhotoByPage(page: Int): LiveData<List<PhotoItemView>> {
         val handler = CoroutineExceptionHandler { _, exception ->
             _loading.value = 7
         }

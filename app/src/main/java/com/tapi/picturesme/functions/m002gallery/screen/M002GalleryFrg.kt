@@ -67,6 +67,10 @@ class M002GalleryFrg : BaseFragment(), GalleryAdapter.clickItemListener {
 
     override fun showDetail(item: PhotoEntity) {
         getStorage().photoItem = item
+//        var bundle = Bundle()
+//        bundle.putParcelable("KEY_PHOTO", item)
+//        App.m003DetailFrg.arguments = bundle
+
         mCallback.showFragment(M003DetailFrg().TAG, false)
 
     }

@@ -115,7 +115,7 @@ class PhotoItemViewDiffUnit : DiffUtil.ItemCallback<PhotoItemView>() {
     }
 
     override fun areContentsTheSame(oldItem: PhotoItemView, newItem: PhotoItemView): Boolean {
-        return oldItem.photoItem.picture == oldItem.photoItem.picture
+        return oldItem.photoItem == oldItem.photoItem
     }
 
 }

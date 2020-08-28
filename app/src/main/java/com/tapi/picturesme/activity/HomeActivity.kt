@@ -11,6 +11,9 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import com.tapi.picturesme.R
+import com.tapi.picturesme.functions.m001home.screen.M001HomeFrg
+import com.tapi.picturesme.functions.m002gallery.screen.M002GalleryFrg
+import com.tapi.picturesme.functions.m003detail.screen.M003DetailFrg
 import com.tapi.picturesme.utils.CommonUtils
 import com.tapi.picturesme.view.base.BaseActivity
 import com.tapi.picturesme.view.base.BaseFragment
@@ -18,6 +21,7 @@ import com.tapi.picturesme.view.fragment.M000Splash
 import kotlinx.android.synthetic.main.home_activity.*
 
 class HomeActivity : BaseActivity(), View.OnClickListener {
+
 
 
     lateinit var tvNoti: TextView

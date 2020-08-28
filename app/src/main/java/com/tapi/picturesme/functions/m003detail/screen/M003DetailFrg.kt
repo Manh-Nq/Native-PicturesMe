@@ -1,5 +1,6 @@
 package com.tapi.picturesme.functions.m003detail.screen
 
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
@@ -19,13 +20,29 @@ class M003DetailFrg : BaseFragment() {
     lateinit var ivImage: ImageView
     lateinit var ivDelete: ImageView
     lateinit var ivBack: ImageView
-    lateinit var item: PhotoEntity
+    var item: PhotoEntity? = PhotoEntity()
     lateinit var viewModel: DetailViewmodel
 
 
     override fun initViews() {
         viewModel = ViewModelProvider(this).get(DetailViewmodel::class.java)
         item = getStorage().photoItem
+
+//        var bundle = arguments
+//        bundle.let {
+//            Log.d(TAG, "initViews: in bundle")
+//            item = it!!.getParcelable("KEY_PHOTO") as PhotoEntity?
+//
+//
+//            val requestOptions = RequestOptions()
+//                .diskCacheStrategy(DiskCacheStrategy.NONE) // because file name is always same
+//                .skipMemoryCache(true)
+//                .centerInside()
+//            Glide.with(mContext).load(item!!.path).centerCrop().apply(requestOptions).centerCrop()
+//                .into(
+//                    ivImage
+//                )
+//        }
         ivImage = findViewById(R.id.iv_detail, this)
         ivDelete = findViewById(R.id.iv_delete, this)
         ivBack = findViewById(R.id.iv_back, this)
@@ -40,7 +57,7 @@ class M003DetailFrg : BaseFragment() {
                 .skipMemoryCache(true)
                 .centerInside()
 
-            Glide.with(mContext).load(item.path).centerCrop().apply(requestOptions).centerCrop()
+            Glide.with(mContext).load(item!!.path).centerCrop().apply(requestOptions).centerCrop()
                 .into(
                     ivImage
                 )
@@ -70,7 +87,7 @@ class M003DetailFrg : BaseFragment() {
     }
 
     private fun deleteFromDatabase() {
-        viewModel.deteleImage(item)
+        viewModel.deteleImage(item!!)
         mCallback.showFragment(M002GalleryFrg().TAG, false)
     }
 

@@ -54,6 +54,15 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
     lateinit var rvrt: RelativeLayout
 
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        homeViewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
+        photoAdapter = PhotoAdapter(requireContext())
+        homeViewModel.getListPhoto().observe(this, Observer {
+            photoAdapter.submitList(it)
+        })
+
+    }
 
 
     override fun initViews() {
@@ -69,10 +78,8 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
         ivSearch = findViewById(R.id.iv_search, this)
         progressBarLoading = findViewById(R.id.progress_loadmore, this)
         btAlbum = findViewById(R.id.bt_album, this)
-        homeViewModel = ViewModelProvider(this).get(HomeViewModel().TAG)
+
         rvPhoto = findViewById(R.id.rv_photo, this)
-
-
         initData()
         observeViewModel()
         recycleListener()
@@ -101,7 +108,6 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
 
     private fun initData() {
         rvPhoto.layoutManager = GridLayoutManager(mContext, 2)
-        photoAdapter = PhotoAdapter(mContext)
         photoAdapter.setCallBackAdapterHome(this)
         rvPhoto.adapter = photoAdapter
     }
@@ -115,12 +121,9 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
             showToast("internet error!!!")
             return
         }
+                homeViewModel.updateData()
 
-        homeViewModel.getListPhoto()?.observe(this, Observer {
-            photoAdapter.submitList(it)
-        })
-
-        homeViewModel.getIsloading().observe(this, Observer {
+        homeViewModel.getIsloading().observe(this, {
             progressBarLoading.visibility = if (it == 1) View.VISIBLE else View.GONE
             Log.d(TAG, "observeViewModel: $it")
             when (it) {
@@ -203,7 +206,7 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
     private fun searchPhotobyPage(page: String) {
         if (checkValid(page)) {
 
-            homeViewModel.getListPhotoByPage(page = page.toInt())?.observe(this, Observer {
+            homeViewModel.getListPhotoByPage(page = page.toInt()).observe(this, Observer {
 
                 if (homeViewModel.getIsloading().value != 1 && homeViewModel.getIsloading().value != 0) {
                     lnNotierr.visibility = View.VISIBLE
