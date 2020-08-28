@@ -125,7 +125,10 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
             showToast("internet error!!!")
             return
         }
-                homeViewModel.updateData()
+        homeViewModel.updateData().observe(this, Observer {
+            photoAdapter.submitList(it)
+            photoAdapter.notifyDataSetChanged()
+        })
 
         homeViewModel.getIsloading().observe(this, {
             progressBarLoading.visibility = if (it == 1) View.VISIBLE else View.GONE
@@ -139,8 +142,6 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
                 7 -> showNotiErr("Disconnect")
             }
         })
-
-
     }
 
 
@@ -344,7 +345,7 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
                     networkStatus = true
                     if (homeViewModel.getListPhoto().value!!.size == 0 && networkStatus) {
                         lnNotierr.let { lnNotierr.visibility = View.GONE }
-                        homeViewModel.loadMore()
+                        homeViewModel.getListPhoto()
                     }
                 }
             } catch (e: NullPointerException) {

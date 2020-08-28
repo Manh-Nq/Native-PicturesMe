@@ -59,7 +59,7 @@ open class HomeViewModel : ViewModel() {
     }
 
 
-    fun updateData() {
+    fun updateData(): LiveData<List<PhotoItemView>> {
 
         viewModelScope.launch {
             var index = 0
@@ -82,6 +82,7 @@ open class HomeViewModel : ViewModel() {
                 }
             }
         }
+        return images
     }
 
     private fun checkValide(code: Int) {

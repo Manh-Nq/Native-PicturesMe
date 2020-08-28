@@ -1,7 +1,6 @@
 package com.tapi.picturesme.functions.m003detail.screen
 
 import android.util.Log
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
