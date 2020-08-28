@@ -25,19 +25,24 @@ class PhotoAdapter(val context: Context) :
     override fun onBindViewHolder(holder: PhotoHolder, position: Int) {
         var photoItemView: PhotoItemView = getItem(position)
         showUIItem(holder)
-        if (!photoItemView.isDownloaded) {
-            holder.progress.visibility= View.VISIBLE
-            Glide.with(context).load(photoItemView.photoItem.picture.thumb)
-                .override(holder.widthView, holder.widthView + 20).into(holder.ivImage)
-            holder.progress.visibility= View.GONE
-            showUIItem(holder)
-
-        } else if (photoItemView.isDownloaded) {
-
-            Glide.with(context).load(photoItemView.photoItem.picture.thumb)
-                .override(holder.widthView, holder.widthView).into(holder.ivImage)
+        if (photoItemView.photoItem.isDownloaded) {
             hideUIItem(holder)
+        } else {
+            if (!photoItemView.isDownloaded) {
+                holder.progress.visibility = View.VISIBLE
+                Glide.with(context).load(photoItemView.photoItem.picture.thumb)
+                    .override(holder.widthView, holder.widthView + 20).into(holder.ivImage)
+                holder.progress.visibility = View.GONE
+                showUIItem(holder)
+
+            } else {
+
+                Glide.with(context).load(photoItemView.photoItem.picture.thumb)
+                    .override(holder.widthView, holder.widthView).into(holder.ivImage)
+                hideUIItem(holder)
+            }
         }
+
         holder.ivImage.tag = photoItemView
 
     }

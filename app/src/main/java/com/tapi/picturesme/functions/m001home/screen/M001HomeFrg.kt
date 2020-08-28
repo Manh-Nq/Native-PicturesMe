@@ -1,10 +1,11 @@
 package com.tapi.picturesme.functions.m001home.screen
 
 import android.app.Activity
-import android.content.Context
-import android.content.ContextWrapper
+import android.content.*
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.ConnectivityManager
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -52,6 +53,7 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
     lateinit var lnNotierr: LinearLayout
     lateinit var tvNotierr: TextView
     lateinit var rvrt: RelativeLayout
+    var networkStatus = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,6 +62,7 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
         photoAdapter = PhotoAdapter(requireContext())
         homeViewModel.getListPhoto().observe(this, Observer {
             photoAdapter.submitList(it)
+            photoAdapter.notifyDataSetChanged()
         })
 
     }
@@ -80,6 +83,7 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
         btAlbum = findViewById(R.id.bt_album, this)
 
         rvPhoto = findViewById(R.id.rv_photo, this)
+        registerReceiverNetwork()
         initData()
         observeViewModel()
         recycleListener()
@@ -223,7 +227,6 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
 
                 }
                 photoAdapter.submitList(it)
-                photoAdapter.notifyDataSetChanged()
             })
         }
 
@@ -296,7 +299,7 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
         CommonUtils.myCoroutineScope.launch(handler) {
             withContext(Dispatchers.Default) {
 
-                    var newUrl = link + "&w=" + 300 + "&dpi=" + 1
+                var newUrl = "$link&w=1080&dpi=1"
                     Log.d(TAG, "URLcustom: $newUrl")
                 Log.d(TAG, "URLOffical: $link ")
                 /**dowmload photo from sever */
@@ -322,16 +325,76 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
                 App.photoDatabase.photoDAO.savePhoto(photo)
                 item.isDownloaded = true
 
-                    }
-                    showToast("download success")
-                    progress.visibility = View.GONE
-                    viewBg.visibility = View.GONE
-
-
             }
+            showToast("download success")
+            progress.visibility = View.GONE
+            viewBg.visibility = View.GONE
+
+
+        }
 
 
     }
 
+    private val networkChangeReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            Log.d(TAG, "onReceive: signIn register")
+            try {
+                if (isOnline(requireContext())) {
+                    networkStatus = true
+                    if (homeViewModel.getListPhoto().value!!.size == 0 && networkStatus) {
+                        lnNotierr.let { lnNotierr.visibility = View.GONE }
+                        homeViewModel.loadMore()
+                    }
+                }
+            } catch (e: NullPointerException) {
+                e.printStackTrace()
+            }
+        }
+    }
 
+    private fun isOnline(context: Context): Boolean {
+        return try {
+            val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val netInfo = cm.activeNetworkInfo
+            //should check null because in airplane mode it will be null
+            netInfo != null && netInfo.isConnected
+        } catch (e: NullPointerException) {
+            e.printStackTrace()
+            false
+        }
+    }
+
+    private fun registerReceiverNetwork() {
+        Log.d(TAG, "onReceive: register")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            requireActivity().registerReceiver(
+                networkChangeReceiver,
+                IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
+            )
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requireActivity().registerReceiver(
+                networkChangeReceiver,
+                IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
+            )
+        }
+    }
+
+    protected fun unRegisterReceiverNetWork() {
+        Log.d(TAG, "onReceive: unregister")
+        try {
+            requireActivity().unregisterReceiver(networkChangeReceiver)
+        } catch (e: IllegalArgumentException) {
+            e.printStackTrace()
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unRegisterReceiverNetWork()
+    }
 }
+
+
+

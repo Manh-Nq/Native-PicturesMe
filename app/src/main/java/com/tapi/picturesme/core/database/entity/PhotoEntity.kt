@@ -14,7 +14,7 @@ class PhotoEntity() : Parcelable {
     var path: String = ""
 
     @ColumnInfo(name = "isDownload")
-    var isDownload: Boolean = true
+    var isDownload: Boolean = false
 
     constructor(parcel: Parcel) : this() {
         path = parcel.readString()!!

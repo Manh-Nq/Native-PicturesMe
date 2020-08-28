@@ -63,22 +63,19 @@ open class HomeViewModel : ViewModel() {
 
         viewModelScope.launch {
             var index = 0
-            var listTmp = mutableListOf<PhotoItemView>()
             if (_images.value != null) {
                 for (item in _images.value!!) {
                     if (!DownLoadPhoto().isDownloaded(item.photoItem)) {
                         var newPhotoItemView = item.copy()
                         newPhotoItemView.isDownloaded = false
                         var photoItemNew = newPhotoItemView.photoItem.copy()
+                        photoItemNew.isDownloaded = false
                         newPhotoItemView.photoItem = photoItemNew
-
                         listData = (_images.value as ArrayList<PhotoItemView>?)!!
 
+                        if (index < listData.size) return@launch
                         listData.set(index, newPhotoItemView)
 
-
-//                        listTmp.add(newPhotoItemView)
-//                        _images.value = listData
                         _images.postValue(listData)
                     }
                     index++
@@ -150,6 +147,7 @@ open class HomeViewModel : ViewModel() {
 
     fun loadMore(): Int {
         currentPage++
+
         val handler = CoroutineExceptionHandler { _, exception ->
             _loading.value = 7
             Log.d("TAG", "CoroutineExceptionHandler got $exception")
