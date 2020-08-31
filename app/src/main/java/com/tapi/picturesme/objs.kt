@@ -8,7 +8,7 @@ data class PhotoItem(
     @SerializedName("created_at") val created: String,
     @SerializedName("updated_at") val updated: String,
     @SerializedName("urls") val picture: Picture,
-    var isDownloaded: Boolean = true
+    var isDownloaded: Boolean = false
 ) {
 
 }

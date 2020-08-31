@@ -185,18 +185,18 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
             R.id.bt_album -> toMyAlbum()
             R.id.iv_remove -> edtSearch.setText("")
             R.id.iv_search_first -> showTableSearch()
-            R.id.iv_del-> hideTableSearch()
+            R.id.iv_del -> hideTableSearch()
             R.id.iv_search -> searchPhotobyPage(textOf(edtSearch))
         }
     }
 
     private fun hideTableSearch() {
-        ivSfirst.visibility= View.VISIBLE
+        ivSfirst.visibility = View.VISIBLE
         tbSearch.visibility = View.GONE
     }
 
     private fun showTableSearch() {
-        ivSfirst.visibility= View.GONE
+        ivSfirst.visibility = View.GONE
         tbSearch.visibility = View.VISIBLE
     }
 
@@ -227,7 +227,7 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
             edtSearch.requestFocus()
             return false
         }
-        if (page.length>=10) {
+        if (page.length >= 10) {
             Log.d(TAG, "checkValid: $page")
             edtSearch.setError("number format error")
             edtSearch.requestFocus()
@@ -283,7 +283,7 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
             Log.d("TAG", "sesm bugger $resultCode")
 
             if (resultCode == 1) {
-               downloadDone(progress, viewBg)
+                downloadDone(progress, viewBg)
             } else {
                 downloadFail(progress, ivCircle, ivDownload, tvDownload)
             }
@@ -326,9 +326,14 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
                 if (isOnline(requireContext())) {
                     networkStatus = true
                     if (homeViewModel.getListPhoto().value!!.size == 0 && networkStatus) {
-                        lnNotierr.let { lnNotierr.visibility = View.GONE }
-                        homeViewModel.getListPhoto()
+                        lnNotierr.visibility = View.GONE
+                        rvrt.visibility = View.VISIBLE
+                        homeViewModel.loadMore()
+
                     }
+                } else {
+                    lnNotierr.visibility = View.VISIBLE
+                    rvrt.visibility = View.GONE
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
