@@ -1,9 +1,10 @@
 package com.tapi.picturesme.functions.m001home.screen
 
 import android.app.Activity
-import android.content.*
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
@@ -17,22 +18,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.tapi.picturesme.App
 import com.tapi.picturesme.R
-import com.tapi.picturesme.core.database.DownLoadPhoto
-import com.tapi.picturesme.core.database.entity.PhotoEntity
-import com.tapi.picturesme.core.server.ApiService
 import com.tapi.picturesme.functions.m001home.PhotoItemView
 import com.tapi.picturesme.functions.m001home.adapter.PhotoAdapter
 import com.tapi.picturesme.functions.m002gallery.screen.M002GalleryFrg
 import com.tapi.picturesme.utils.CommonUtils
 import com.tapi.picturesme.view.base.BaseFragment
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import okhttp3.ResponseBody
-import java.io.File
 
 class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
     val TAG = M001HomeFrg::class.java.name
@@ -40,8 +31,7 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
     lateinit var photoAdapter: PhotoAdapter
     lateinit var homeViewModel: HomeViewModel
     lateinit var btAlbum: FloatingActionButton
-    lateinit var response: ResponseBody
-    lateinit var bitMap: Bitmap
+
     lateinit var progressBarLoading: ProgressBar
     lateinit var edtSearch: EditText
     lateinit var ivRemove: ImageView
@@ -83,9 +73,10 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
         btAlbum = findViewById(R.id.bt_album, this)
 
         rvPhoto = findViewById(R.id.rv_photo, this)
-        registerReceiverNetwork()
+
         initData()
         observeViewModel()
+        registerReceiverNetwork()
         recycleListener()
         searchPage()
 
@@ -277,65 +268,70 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
         ivDownload: ImageView,
         tvDownload: TextView
     ) {
-        val handler = CoroutineExceptionHandler { _, exception ->
-            Log.d("TAG", "CoroutineExceptionHandler got $exception")
-            showToast("download fail")
-            progress.visibility = View.GONE
-            ivCircle.visibility = View.VISIBLE
-            ivDownload.visibility = View.VISIBLE
-            tvDownload.visibility = View.VISIBLE
-        }
-
+        Log.d(TAG, "sesmCode: start download")
         var link = item.photoItem.picture.raw
-
         if (!CommonUtils.isNetworkConnected(activity as Activity)) {
             showToast("internet error")
             return
         }
+        Log.d(TAG, "sesmCode: in method download")
         tvDownload.visibility = View.GONE
         ivCircle.visibility = View.GONE
         progress.visibility = View.VISIBLE
         ivDownload.visibility = View.GONE
 
-        CommonUtils.myCoroutineScope.launch(handler) {
-            withContext(Dispatchers.Default) {
+        homeViewModel.downloadPhoto(link).observe(this, Observer {
 
-                var newUrl = "$link&w=1080&dpi=1"
-                    Log.d(TAG, "URLcustom: $newUrl")
-                Log.d(TAG, "URLOffical: $link ")
-                /**dowmload photo from sever */
-
-                response = ApiService.retrofitService.getPhotoFromSever(newUrl)
-                bitMap = BitmapFactory.decodeStream(response.byteStream())
-
-
-                /** save image to internal */
-                val path = link.substring(link.indexOf('-') + 1, link.indexOf('?')) + ".png"
-                try {
-                    DownLoadPhoto().saveToInternalStorage(bitMap, path)
-                } catch (e: Exception) {
-                    showToast("Not find File path !!!")
-                }
-
-                val cw = ContextWrapper(App.instance.getApplicationContext())
-                val directory: File = cw.getDir("imageDir", Context.MODE_PRIVATE)
-
-                var photo = PhotoEntity()
-                photo.path = "$directory/$path"
-                photo.isDownload = true
-                App.photoDatabase.photoDAO.savePhoto(photo)
-                item.isDownloaded = true
-
+            Log.d(TAG, "sesmCode: downloading....")
+            when (it) {
+                1 -> downloadFail(progress, ivCircle, ivDownload, tvDownload)
+                0 -> downloadDone(progress, viewBg)
+                2 -> saveToFileFail(progress, ivCircle, ivDownload, tvDownload)
             }
-            showToast("download success")
-            progress.visibility = View.GONE
-            viewBg.visibility = View.GONE
-
-
         }
+        )
+    }
 
+    private fun saveToFileFail(
+        progress: ProgressBar,
+        ivCircle: ImageView,
+        ivDownload: ImageView,
+        tvDownload: TextView
+    ) {
+        Log.d(TAG, "sesmCode: Download fail")
+
+        showToast("Not find file path")
+        progress.visibility = View.GONE
+        ivCircle.visibility = View.VISIBLE
+        ivDownload.visibility = View.VISIBLE
+        tvDownload.visibility = View.VISIBLE
+    }
+
+    private fun downloadDone(progress: ProgressBar, viewBg: View) {
+        Log.d(TAG, "sesmCode: Download done")
+
+        showToast("download success")
+        progress.visibility = View.INVISIBLE
+        viewBg.visibility = View.GONE
 
     }
+
+    private fun downloadFail(
+        progress: ProgressBar,
+        ivCircle: ImageView,
+        ivDownload: ImageView,
+        tvDownload: TextView
+    ) {
+        Log.d(TAG, "sesmCode: Download fail")
+
+        showToast("download fail")
+        progress.visibility = View.GONE
+        ivCircle.visibility = View.VISIBLE
+        ivDownload.visibility = View.VISIBLE
+        tvDownload.visibility = View.VISIBLE
+
+    }
+
 
     private val networkChangeReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {

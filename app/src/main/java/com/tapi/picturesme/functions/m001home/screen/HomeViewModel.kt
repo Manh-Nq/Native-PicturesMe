@@ -1,20 +1,43 @@
 package com.tapi.picturesme.functions.m001home.screen
 
+import android.content.Context
+import android.content.ContextWrapper
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.tapi.picturesme.core.database.DownLoadPhoto
+import com.tapi.picturesme.App
+import com.tapi.picturesme.core.database.entity.PhotoEntity
+import com.tapi.picturesme.core.database.isDownloaded
+import com.tapi.picturesme.core.database.saveToInternalStorage
 import com.tapi.picturesme.core.server.ApiService
 import com.tapi.picturesme.functions.m001home.PhotoItemView
+import com.tapi.picturesme.utils.CommonUtils
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.ResponseBody
+import java.io.File
 
 open class HomeViewModel : ViewModel() {
+    val LOAD_DONE = 0
+    val LOADING = 1
+    val NON_ACCESS = 2
+    val NON_HTTP = 3
+    val INTERNAL_SERVER_ERROR = 4
+    val TOO_TIME_OUT = 5
+    val SERVER_ERR = 6
+    val COROUTINE_ERR = 7
+    lateinit var response: ResponseBody
+    lateinit var bitMap: Bitmap
 
-    private var listData : ArrayList<PhotoItemView> = ArrayList()
+    private var listData: ArrayList<PhotoItemView> = ArrayList()
     private var _images: MutableLiveData<List<PhotoItemView>> = MutableLiveData()
+
     val images: LiveData<List<PhotoItemView>>
         get() = _images
 
@@ -24,10 +47,14 @@ open class HomeViewModel : ViewModel() {
     val loading: LiveData<Int>
         get() = _loading
 
+    private var _downloadState = MutableLiveData<Int>()
+    val downloadState: LiveData<Int>
+        get() = _downloadState
+
 
     fun getListPhoto(): LiveData<List<PhotoItemView>> {
         val handler = CoroutineExceptionHandler { _, exception ->
-            _loading.value = 7
+            _loading.value = COROUTINE_ERR
         }
 
         Log.d("TAG", "loadList: API listPhoto calling....... ")
@@ -38,13 +65,14 @@ open class HomeViewModel : ViewModel() {
 
             checkValide(response.code())
 
-            _loading.value = 1
+            _loading.value = LOADING
             response.body()?.let {
                 Log.d("TAG", "comfirmPhoto: ${it.size}")
 
+
                 _images.postValue(it.map {
 
-                    if (DownLoadPhoto().isDownloaded(it)) {
+                    if (isDownloaded(it)) {
                         PhotoItemView(it, true)
 
                     } else {
@@ -52,7 +80,7 @@ open class HomeViewModel : ViewModel() {
                     }
                 })
             }
-            _loading.value = 0
+            _loading.value = LOAD_DONE
         }
 
         return images
@@ -65,7 +93,7 @@ open class HomeViewModel : ViewModel() {
             var index = 0
             if (_images.value != null) {
                 for (item in _images.value!!) {
-                    if (!DownLoadPhoto().isDownloaded(item.photoItem)) {
+                    if (isDownloaded(item.photoItem)) {
                         var newPhotoItemView = item.copy()
                         newPhotoItemView.isDownloaded = false
                         var photoItemNew = newPhotoItemView.photoItem.copy()
@@ -87,27 +115,27 @@ open class HomeViewModel : ViewModel() {
 
     private fun checkValide(code: Int) {
         if (code == 200) {
-            _loading.value = 1
+            _loading.value = LOADING
             return
         }
         if (code == 401) {
-            _loading.value = 2
+            _loading.value = NON_ACCESS
             return
         }
         if (code == 404) {
-            _loading.value = 3
+            _loading.value = NON_HTTP
             return
         }
         if (code == 500) {
-            _loading.value = 4
+            _loading.value = INTERNAL_SERVER_ERROR
             return
         }
         if (code == 504) {
-            _loading.value = 5
+            _loading.value = TOO_TIME_OUT
             return
         }
         if (code != 200) {
-            _loading.value = 6
+            _loading.value = SERVER_ERR
             return
         }
 
@@ -115,7 +143,7 @@ open class HomeViewModel : ViewModel() {
 
     fun getListPhotoByPage(page: Int): LiveData<List<PhotoItemView>> {
         val handler = CoroutineExceptionHandler { _, exception ->
-            _loading.value = 7
+            _loading.value = COROUTINE_ERR
         }
         Log.d("TAG", "loadMore : API getListPhotoByPage calling....... ")
 
@@ -123,19 +151,19 @@ open class HomeViewModel : ViewModel() {
 
             var response = ApiService.retrofitService.getPictures(page = page)
 
-            _loading.value = 1
+            _loading.value = LOADING
             checkValide(response.code())
             _images.postValue(response.body()?.map {
 
                 Log.d("TAG", "comfirmPhoto: $it")
-                if (DownLoadPhoto().isDownloaded(it)) {
+                if (isDownloaded(it)) {
                     PhotoItemView(it, true)
 
                 } else {
                     PhotoItemView(it, false)
                 }
             })
-            _loading.value = 0
+            _loading.value = LOAD_DONE
             }
 
         return images
@@ -150,7 +178,7 @@ open class HomeViewModel : ViewModel() {
         currentPage++
 
         val handler = CoroutineExceptionHandler { _, exception ->
-            _loading.value = 7
+            _loading.value = COROUTINE_ERR
             Log.d("TAG", "CoroutineExceptionHandler got $exception")
         }
         viewModelScope.launch(handler) {
@@ -164,10 +192,10 @@ open class HomeViewModel : ViewModel() {
     suspend fun callGetPhotoToLoadMore(currentPage: Int): LiveData<List<PhotoItemView>>? {
 
         Log.d("TAG", "loadMore: API loadMore calling....... ")
-        _loading.value = 1
+        _loading.value = LOADING
         val moreList = ApiService.retrofitService.getPictures(page = currentPage)
             .body()?.map {
-                if (DownLoadPhoto().isDownloaded(it)) {
+                if (isDownloaded(it)) {
                     PhotoItemView(it, true)
                 } else {
                     PhotoItemView(it, false)
@@ -183,12 +211,53 @@ open class HomeViewModel : ViewModel() {
             _images.value = currList
         }
 
-        _loading.value = 0
+        _loading.value = LOAD_DONE
         return _images
 
 
     }
 
+    fun downloadPhoto(link: String): LiveData<Int> {
+        var handler = CoroutineExceptionHandler { _, exception ->
+            _downloadState.postValue(1)
+        }
+        CommonUtils.myCoroutineScope.launch(handler) {
+            withContext(Dispatchers.Default) {
+
+                var newUrl = "$link&w=1080&dpi=1"
+
+                /**dowmload photo from sever */
+
+                response = ApiService.retrofitService.getPhotoFromSever(newUrl)
+                bitMap = BitmapFactory.decodeStream(response.byteStream())
+
+
+                /** save image to internal */
+
+                val path = link.substring(link.indexOf('-') + 1, link.indexOf('?')) + ".png"
+                try {
+                    saveToInternalStorage(bitMap, path)
+                } catch (e: Exception) {
+                    _downloadState.postValue(2)
+                }
+
+                val cw = ContextWrapper(App.instance.getApplicationContext())
+                val directory: File = cw.getDir("imageDir", Context.MODE_PRIVATE)
+
+                var photo = PhotoEntity()
+                photo.path = "$directory/$path"
+                photo.isDownload = true
+                App.photoDatabase.photoDAO.savePhoto(photo)
+
+
+            }
+
+            _downloadState.postValue(0)
+
+
+        }
+        return downloadState
+    }
 }
 
 

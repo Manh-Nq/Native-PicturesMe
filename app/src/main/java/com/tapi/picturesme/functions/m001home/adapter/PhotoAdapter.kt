@@ -88,7 +88,6 @@ class PhotoAdapter(val context: Context) :
 
 
         private fun downLoad(item: PhotoItemView) {
-
             callback.downLoad(item, progress, viewBg, ivCircle, ivDownload, tvDownload)
         }
 

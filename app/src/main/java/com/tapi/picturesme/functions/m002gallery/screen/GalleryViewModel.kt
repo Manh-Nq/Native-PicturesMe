@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tapi.picturesme.App
-import com.tapi.picturesme.core.database.DownLoadPhoto
 import com.tapi.picturesme.core.database.entity.PhotoEntity
 import com.tapi.picturesme.functions.m001home.PhotoItemView
 import kotlinx.coroutines.launch

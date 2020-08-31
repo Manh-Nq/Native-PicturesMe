@@ -52,26 +52,6 @@ abstract class BaseFragment : Fragment(), View.OnClickListener {
         return view as T
     }
 
-    fun <T : View> findViewById(id: Int, tf: Typeface): T {
-        val view: View = mView.findViewById(id)
-
-        if (view is TextView) {
-            view.typeface = tf
-        }
-        return view as T
-    }
-
-    fun <T : View> findViewById(id: Int, event: View.OnClickListener, tf: Typeface): T {
-        val view: View = mView.findViewById(id)
-        if (view != null && event != null) {
-            view.setOnClickListener(event)
-        }
-        if (view is TextView) {
-            view.typeface = tf
-        }
-        return view as T
-    }
-
     open fun showToast(text: String) {
         if (text != null) {
             Toast.makeText(mContext, text, Toast.LENGTH_SHORT).show()

@@ -41,11 +41,6 @@ abstract class BaseActivity : AppCompatActivity(), OnActionCallBack {
 
         }
     }
-    open fun showToast(text: String, duration:Int) {
-        if (text != null) {
-            Toast.makeText(this, text, duration).show()
-        }
-    }
 
     override fun showFragment(tag: String, kill: Boolean) {
         try {

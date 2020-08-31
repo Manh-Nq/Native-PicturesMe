@@ -36,7 +36,7 @@ class HomeActivity : BaseActivity(), View.OnClickListener {
             tvNoti.visibility = View.VISIBLE
             iv_warning.visibility = View.VISIBLE
             Log.d("TAG", "delaytime: this is check network")
-            showToast("thiết bị của bạn chưa được kết nối internet", Toast.LENGTH_LONG)
+            showToast("thiết bị của bạn chưa được kết nối internet")
         } else {
             Log.d("TAG", "delaytime: this is check network done and show frg")
             showFragment(M000Splash().TAG,false)

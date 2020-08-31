@@ -14,8 +14,6 @@ import java.io.FileOutputStream
 import java.io.IOException
 
 
-class DownLoadPhoto() {
-
 
      fun saveToInternalStorage(bitmapImage: Bitmap, path: String): String? {
 
@@ -72,5 +70,4 @@ class DownLoadPhoto() {
     }
 
 
-}
 

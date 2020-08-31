@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tapi.picturesme.App
-import com.tapi.picturesme.core.database.DownLoadPhoto
+import com.tapi.picturesme.core.database.deleteFile
 import com.tapi.picturesme.core.database.entity.PhotoEntity
 import kotlinx.coroutines.launch
 
@@ -27,10 +27,10 @@ class DetailViewmodel : ViewModel() {
 
     fun deteleImage(item: PhotoEntity) = viewModelScope.launch {
         App.photoDatabase.photoDAO.deletePhoto(item)
-        DownLoadPhoto().deleteFile(item.path)
+       deleteFile(item.path)
 
 
-        Log.d("TAG", "deteleImage: ${item.path}  + ${DownLoadPhoto().deleteFile(item.path)}")
+        Log.d("TAG", "deteleImage: ${item.path}  + ${deleteFile(item.path)}")
 
     }
 }
