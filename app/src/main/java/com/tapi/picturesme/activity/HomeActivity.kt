@@ -2,23 +2,21 @@ package com.tapi.picturesme.activity
 
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
 import android.view.View
 import android.widget.TextView
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import com.tapi.picturesme.R
-import com.tapi.picturesme.functions.m001home.screen.M001HomeFrg
-import com.tapi.picturesme.functions.m002gallery.screen.M002GalleryFrg
-import com.tapi.picturesme.functions.m003detail.screen.M003DetailFrg
 import com.tapi.picturesme.utils.CommonUtils
 import com.tapi.picturesme.view.base.BaseActivity
 import com.tapi.picturesme.view.base.BaseFragment
 import com.tapi.picturesme.view.fragment.M000Splash
 import kotlinx.android.synthetic.main.home_activity.*
+
 
 class HomeActivity : BaseActivity(), View.OnClickListener {
 
@@ -39,7 +37,7 @@ class HomeActivity : BaseActivity(), View.OnClickListener {
             showToast("thiết bị của bạn chưa được kết nối internet")
         } else {
             Log.d("TAG", "delaytime: this is check network done and show frg")
-            showFragment(M000Splash().TAG,false)
+            showFragment(M000Splash().TAG, false)
 
         }
 
@@ -51,7 +49,8 @@ class HomeActivity : BaseActivity(), View.OnClickListener {
         if (ContextCompat.checkSelfPermission(
                 this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
-            ) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
+            ) != PackageManager.PERMISSION_GRANTED
+            && ContextCompat.checkSelfPermission(
                 this,
                 Manifest.permission.READ_EXTERNAL_STORAGE
             ) != PackageManager.PERMISSION_GRANTED
@@ -65,6 +64,20 @@ class HomeActivity : BaseActivity(), View.OnClickListener {
         }
     }
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String?>,
+        grantResults: IntArray
+    ) {
+        when (requestCode) {
+            100 -> {
+                if (grantResults.size > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    showToast("you can accept permission!!!")
+                }
+            }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
 
     override fun getLayoutByID(): Int {
         return R.layout.home_activity

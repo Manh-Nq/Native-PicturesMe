@@ -78,7 +78,7 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
         rvPhoto = findViewById(R.id.rv_photo)
         initData()
         observeViewModel()
-//        registerReceiverNetwork()
+        registerReceiverNetwork()
         recycleListener()
         searchPage()
 

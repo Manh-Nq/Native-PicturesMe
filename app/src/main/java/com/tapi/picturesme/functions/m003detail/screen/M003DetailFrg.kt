@@ -1,6 +1,5 @@
 package com.tapi.picturesme.functions.m003detail.screen
 
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
@@ -9,6 +8,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
+import com.tapi.picturesme.App
 import com.tapi.picturesme.R
 import com.tapi.picturesme.core.database.entity.PhotoEntity
 import com.tapi.picturesme.functions.m002gallery.screen.M002GalleryFrg
@@ -26,7 +26,7 @@ class M003DetailFrg : BaseFragment() {
 
     override fun initViews() {
         viewModel = ViewModelProvider(this).get(DetailViewmodel::class.java)
-        item = getStorage().photoItem
+        item = App.storageCommon.photoItem
 
 //        var bundle = arguments
 //        bundle.let {

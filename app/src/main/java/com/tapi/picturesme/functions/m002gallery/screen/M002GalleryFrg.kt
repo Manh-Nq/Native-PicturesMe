@@ -7,6 +7,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.tapi.picturesme.App
 import com.tapi.picturesme.R
 import com.tapi.picturesme.core.database.entity.PhotoEntity
 import com.tapi.picturesme.functions.m001home.screen.M001HomeFrg
@@ -61,7 +62,7 @@ class M002GalleryFrg : BaseFragment(), GalleryAdapter.clickItemListener {
     }
 
     override fun showDetail(item: PhotoEntity) {
-        getStorage().photoItem = item
+        App.storageCommon.photoItem = item
 //        var bundle = Bundle()
 //        bundle.putParcelable("KEY_PHOTO", item)
 //        App.m003DetailFrg.arguments = bundle

@@ -73,14 +73,6 @@ abstract class BaseFragment : Fragment(), View.OnClickListener {
         return edt.text.toString().trim()
     }
 
-    fun textOf(tv: TextView): String {
-        return tv.text.toString().trim()
-    }
-
-   open fun getStorage(): StorageCommon {
-        return App.storageCommon
-    }
-
 }
 
 
