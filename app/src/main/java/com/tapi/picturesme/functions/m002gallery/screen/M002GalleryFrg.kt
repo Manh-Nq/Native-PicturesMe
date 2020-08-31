@@ -32,7 +32,6 @@ class M002GalleryFrg : BaseFragment(), GalleryAdapter.clickItemListener {
 
     private fun initData() {
         rvGallery.layoutManager = GridLayoutManager(mContext, 2)
-
         galleryAdapter = GalleryAdapter(mContext)
         galleryAdapter.setClickItemListener(this)
         rvGallery.adapter = galleryAdapter
@@ -40,7 +39,6 @@ class M002GalleryFrg : BaseFragment(), GalleryAdapter.clickItemListener {
 
     private fun observeViewModel() {
         viewModel.getListPhoto().observe(this, Observer {
-
             Log.d(TAG, "observeViewModel: ${it.size}")
             galleryAdapter.submitList(it)
 
@@ -49,13 +47,10 @@ class M002GalleryFrg : BaseFragment(), GalleryAdapter.clickItemListener {
 
     override fun onClick(p0: View) {
         when (p0.id) {
-            R.id.iv_back -> backToFrg()
+            R.id.iv_back ->   mCallback.showFragment(M001HomeFrg().TAG,false)
         }
     }
 
-    private fun backToFrg() {
-        mCallback.showFragment(M001HomeFrg().TAG,false)
-    }
 
     override fun getLayoutByID(): Int {
         return R.layout.m002_gallery_frg

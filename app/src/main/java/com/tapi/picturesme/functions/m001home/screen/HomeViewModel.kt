@@ -15,13 +15,13 @@ import com.tapi.picturesme.core.database.isDownloaded
 import com.tapi.picturesme.core.database.saveToInternalStorage
 import com.tapi.picturesme.core.server.ApiService
 import com.tapi.picturesme.functions.m001home.PhotoItemView
-import com.tapi.picturesme.utils.CommonUtils
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.ResponseBody
 import java.io.File
+import java.io.FileInputStream
 
 open class HomeViewModel : ViewModel() {
     val LOAD_DONE = 0
@@ -46,10 +46,6 @@ open class HomeViewModel : ViewModel() {
     private var _loading = MutableLiveData<Int>()
     val loading: LiveData<Int>
         get() = _loading
-
-    private var _downloadState = MutableLiveData<Int>()
-    val downloadState: LiveData<Int>
-        get() = _downloadState
 
 
     fun getListPhoto(): LiveData<List<PhotoItemView>> {
@@ -82,7 +78,6 @@ open class HomeViewModel : ViewModel() {
             }
             _loading.value = LOAD_DONE
         }
-
         return images
     }
 
@@ -217,30 +212,19 @@ open class HomeViewModel : ViewModel() {
 
     }
 
-    fun downloadPhoto(link: String): LiveData<Int> {
-        var handler = CoroutineExceptionHandler { _, exception ->
-            _downloadState.postValue(1)
-        }
-        CommonUtils.myCoroutineScope.launch(handler) {
-            withContext(Dispatchers.Default) {
+    suspend fun downloadPhoto(link: String): Int {
+        try {
 
+            return withContext(Dispatchers.Default) {
                 var newUrl = "$link&w=1080&dpi=1"
-
                 /**dowmload photo from sever */
-
                 response = ApiService.retrofitService.getPhotoFromSever(newUrl)
                 bitMap = BitmapFactory.decodeStream(response.byteStream())
-
 
                 /** save image to internal */
 
                 val path = link.substring(link.indexOf('-') + 1, link.indexOf('?')) + ".png"
-                try {
-                    saveToInternalStorage(bitMap, path)
-                } catch (e: Exception) {
-                    _downloadState.postValue(2)
-                }
-
+                saveToInternalStorage(bitMap, path)
                 val cw = ContextWrapper(App.instance.getApplicationContext())
                 val directory: File = cw.getDir("imageDir", Context.MODE_PRIVATE)
 
@@ -248,16 +232,15 @@ open class HomeViewModel : ViewModel() {
                 photo.path = "$directory/$path"
                 photo.isDownload = true
                 App.photoDatabase.photoDAO.savePhoto(photo)
-
-
+                1
             }
 
-            _downloadState.postValue(0)
-
-
+        } catch (e: Exception) {
+            return -1;
         }
-        return downloadState
+
     }
+
 }
 
 

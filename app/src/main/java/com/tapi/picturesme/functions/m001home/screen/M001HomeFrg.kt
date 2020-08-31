@@ -24,6 +24,9 @@ import com.tapi.picturesme.functions.m001home.adapter.PhotoAdapter
 import com.tapi.picturesme.functions.m002gallery.screen.M002GalleryFrg
 import com.tapi.picturesme.utils.CommonUtils
 import com.tapi.picturesme.view.base.BaseFragment
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 
 class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
     val TAG = M001HomeFrg::class.java.name
@@ -31,7 +34,6 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
     lateinit var photoAdapter: PhotoAdapter
     lateinit var homeViewModel: HomeViewModel
     lateinit var btAlbum: FloatingActionButton
-
     lateinit var progressBarLoading: ProgressBar
     lateinit var edtSearch: EditText
     lateinit var ivRemove: ImageView
@@ -43,6 +45,7 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
     lateinit var lnNotierr: LinearLayout
     lateinit var tvNotierr: TextView
     lateinit var rvrt: RelativeLayout
+    val UIThread = MainScope()
     var networkStatus = false
 
 
@@ -59,24 +62,23 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
 
 
     override fun initViews() {
-        rvrt = findViewById(R.id.rt_rv, this)
-        lnNotierr = findViewById(R.id.ln_noti_err, this)
-        tvNotierr = findViewById(R.id.tv_notierr, this)
+        rvrt = findViewById(R.id.rt_rv)
+        lnNotierr = findViewById(R.id.ln_noti_err)
+        tvNotierr = findViewById(R.id.tv_notierr)
         ivPrevious = findViewById(R.id.iv_del, this)
-        tbSearch = findViewById(R.id.tb_search, this)
+        tbSearch = findViewById(R.id.tb_search)
         ivSfirst = findViewById(R.id.iv_search_first, this)
-        tvNoti = findViewById(R.id.tv_notilist, this)
-        edtSearch = findViewById(R.id.edt_search, this)
+        tvNoti = findViewById(R.id.tv_notilist)
+        edtSearch = findViewById(R.id.edt_search)
         ivRemove = findViewById(R.id.iv_remove, this)
         ivSearch = findViewById(R.id.iv_search, this)
-        progressBarLoading = findViewById(R.id.progress_loadmore, this)
+        progressBarLoading = findViewById(R.id.progress_loadmore)
         btAlbum = findViewById(R.id.bt_album, this)
 
-        rvPhoto = findViewById(R.id.rv_photo, this)
-
+        rvPhoto = findViewById(R.id.rv_photo)
         initData()
         observeViewModel()
-        registerReceiverNetwork()
+//        registerReceiverNetwork()
         recycleListener()
         searchPage()
 
@@ -87,7 +89,6 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
 
-                //
                 if (textOf(edtSearch).length > 0) {
 //                    ivSearch.visibility = View.VISIBLE
                     ivRemove.visibility = View.VISIBLE
@@ -201,9 +202,7 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
 
     private fun searchPhotobyPage(page: String) {
         if (checkValid(page)) {
-
             homeViewModel.getListPhotoByPage(page = page.toInt()).observe(this, Observer {
-
                 if (homeViewModel.getIsloading().value != 1 && homeViewModel.getIsloading().value != 0) {
                     lnNotierr.visibility = View.VISIBLE
                     rvrt.visibility = View.GONE
@@ -211,12 +210,10 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
                     Log.d(TAG, "searchPhotobyPag11e: ${homeViewModel.getIsloading().value}")
                     showToast("sever error!!!")
                 }
-
                 if (it == null || it.size < 0) {
                     Log.d(TAG, "searchPhotobyPage: ${it.size}")
                     tvNoti.visibility = View.VISIBLE
                     showToast("internet error!!!")
-
                 }
                 photoAdapter.submitList(it)
             })
@@ -245,7 +242,6 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
 
 
     private fun toMyAlbum() {
-
         mCallback.showFragment(M002GalleryFrg().TAG, false)
     }
 
@@ -268,50 +264,40 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
         ivDownload: ImageView,
         tvDownload: TextView
     ) {
-        Log.d(TAG, "sesmCode: start download")
+        Log.d(TAG, "sesmCode: start download ")
         var link = item.photoItem.picture.raw
         if (!CommonUtils.isNetworkConnected(activity as Activity)) {
             showToast("internet error")
             return
         }
-        Log.d(TAG, "sesmCode: in method download")
-        tvDownload.visibility = View.GONE
-        ivCircle.visibility = View.GONE
-        progress.visibility = View.VISIBLE
-        ivDownload.visibility = View.GONE
 
-        homeViewModel.downloadPhoto(link).observe(this, Observer {
+        UIThread.launch {
+            tvDownload.visibility = View.GONE
+            ivCircle.visibility = View.GONE
+            progress.visibility = View.VISIBLE
+            ivDownload.visibility = View.GONE
+        }
+        UIThread.launch {
+            val resultCode = homeViewModel.downloadPhoto(link)
 
-            Log.d(TAG, "sesmCode: downloading....")
-            when (it) {
-                1 -> downloadFail(progress, ivCircle, ivDownload, tvDownload)
-                0 -> downloadDone(progress, viewBg)
-                2 -> saveToFileFail(progress, ivCircle, ivDownload, tvDownload)
+            Log.d("TAG", "sesm bugger $resultCode")
+
+            if (resultCode == 1) {
+               downloadDone(progress, viewBg)
+            } else {
+                downloadFail(progress, ivCircle, ivDownload, tvDownload)
             }
         }
-        )
+
+
     }
 
-    private fun saveToFileFail(
-        progress: ProgressBar,
-        ivCircle: ImageView,
-        ivDownload: ImageView,
-        tvDownload: TextView
-    ) {
-        Log.d(TAG, "sesmCode: Download fail")
-
-        showToast("Not find file path")
-        progress.visibility = View.GONE
-        ivCircle.visibility = View.VISIBLE
-        ivDownload.visibility = View.VISIBLE
-        tvDownload.visibility = View.VISIBLE
-    }
 
     private fun downloadDone(progress: ProgressBar, viewBg: View) {
         Log.d(TAG, "sesmCode: Download done")
 
         showToast("download success")
-        progress.visibility = View.INVISIBLE
+        progress.visibility = View.GONE
         viewBg.visibility = View.GONE
 
     }
@@ -344,7 +330,7 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
                         homeViewModel.getListPhoto()
                     }
                 }
-            } catch (e: NullPointerException) {
+            } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
@@ -356,7 +342,7 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
             val netInfo = cm.activeNetworkInfo
             //should check null because in airplane mode it will be null
             netInfo != null && netInfo.isConnected
-        } catch (e: NullPointerException) {
+        } catch (e: Exception) {
             e.printStackTrace()
             false
         }
@@ -390,6 +376,7 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
     override fun onDestroy() {
         super.onDestroy()
         unRegisterReceiverNetWork()
+        UIThread.cancel()
     }
 }
 

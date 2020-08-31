@@ -88,19 +88,8 @@ class HomeActivity : BaseActivity(), View.OnClickListener {
         }
 
     }
-
     override fun onClick(p0: View?) {
 
     }
-
-//    open fun isNetworkConnected(): Boolean {
-//        Log.d("TAG", "isnetworkConnected: check network connect")
-//
-//        val cm: ConnectivityManager =
-//            this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-//
-//        Log.d("TAG", "isnetworkConnected: this is check network done")
-//        return cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo()!!.isConnected()
-//    }
 
 }

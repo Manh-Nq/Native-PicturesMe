@@ -1,7 +1,6 @@
 package com.tapi.picturesme.view.base
 
 import android.content.Context
-import android.graphics.Typeface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -49,6 +48,12 @@ abstract class BaseFragment : Fragment(), View.OnClickListener {
         if (view != null && event != null) {
             view.setOnClickListener(event)
         }
+        return view as T
+    }
+
+    fun <T : View> findViewById(id: Int): T {
+        val view: View = mView.findViewById(id)
+
         return view as T
     }
 

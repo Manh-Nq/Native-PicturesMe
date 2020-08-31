@@ -27,8 +27,7 @@ class DetailViewmodel : ViewModel() {
 
     fun deteleImage(item: PhotoEntity) = viewModelScope.launch {
         App.photoDatabase.photoDAO.deletePhoto(item)
-       deleteFile(item.path)
-
+        deleteFile(item.path)
 
         Log.d("TAG", "deteleImage: ${item.path}  + ${deleteFile(item.path)}")
 

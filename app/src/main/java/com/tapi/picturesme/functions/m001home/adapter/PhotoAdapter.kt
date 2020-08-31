@@ -29,20 +29,14 @@ class PhotoAdapter(val context: Context) :
             hideUIItem(holder)
         } else {
             if (!photoItemView.isDownloaded) {
-                holder.progress.visibility = View.VISIBLE
-                Glide.with(context).load(photoItemView.photoItem.picture.thumb)
-                    .override(holder.widthView, holder.widthView + 20).into(holder.ivImage)
-                holder.progress.visibility = View.GONE
                 showUIItem(holder)
-
             } else {
-
-                Glide.with(context).load(photoItemView.photoItem.picture.thumb)
-                    .override(holder.widthView, holder.widthView).into(holder.ivImage)
                 hideUIItem(holder)
             }
-        }
 
+        }
+        Glide.with(context).load(photoItemView.photoItem.picture.thumb)
+            .override(holder.widthView, holder.widthView).into(holder.ivImage)
         holder.ivImage.tag = photoItemView
 
     }
@@ -108,9 +102,7 @@ class PhotoAdapter(val context: Context) :
             ivDownload: ImageView,
             tvDownload: TextView
         )
-
     }
-
 }
 
 class PhotoItemViewDiffUnit : DiffUtil.ItemCallback<PhotoItemView>() {
