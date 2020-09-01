@@ -12,6 +12,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
+import android.view.animation.AnimationUtils
 import android.widget.*
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -90,11 +91,9 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
 
                 if (textOf(edtSearch).length > 0) {
-//                    ivSearch.visibility = View.VISIBLE
                     ivRemove.visibility = View.VISIBLE
                 } else {
                     ivRemove.visibility = View.GONE
-//                    ivSearch.visibility = View.GONE
                 }
             }
 
@@ -264,6 +263,8 @@ class M001HomeFrg : BaseFragment(), PhotoAdapter.adapterListener {
         ivDownload: ImageView,
         tvDownload: TextView
     ) {
+
+
         Log.d(TAG, "sesmCode: start download ")
         var link = item.photoItem.picture.raw
         if (!CommonUtils.isNetworkConnected(activity as Activity)) {

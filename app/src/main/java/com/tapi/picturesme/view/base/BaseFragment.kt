@@ -6,11 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.tapi.picturesme.App
-import com.tapi.picturesme.utils.StorageCommon
 import com.tapi.picturesme.view.event.OnActionCallBack
 
 abstract class BaseFragment : Fragment(), View.OnClickListener {
@@ -52,10 +49,10 @@ abstract class BaseFragment : Fragment(), View.OnClickListener {
     }
 
     fun <T : View> findViewById(id: Int): T {
-        val view: View = mView.findViewById(id)
+    val view: View = mView.findViewById(id)
 
-        return view as T
-    }
+    return view as T
+}
 
     open fun showToast(text: String) {
         if (text != null) {

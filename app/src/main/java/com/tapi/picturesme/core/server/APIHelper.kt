@@ -11,13 +11,14 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 import retrofit2.http.Url
 import java.util.concurrent.TimeUnit
+import javax.net.ssl.HostnameVerifier
 
 private const val BASE_URL = "https://api.unsplash.com/"
 
 //private const val CLIENT_ID = "ZCrQRuxnXBxzR_sl0WeHvj9nMEdw5y-ySr5wbWDp7Sw"
-//private const val CLIENT_ID = "qvCbQbUZ7aYALe92pRjVIgmah6s4Z37x6wVhkQO6VxU"
+private const val CLIENT_ID = "qvCbQbUZ7aYALe92pRjVIgmah6s4Z37x6wVhkQO6VxU"
 //private const val CLIENT_ID = "UBwTjAoO8d80XQkzsLHeaQxiBe9Or42c5P1mQJI"
-private const val CLIENT_ID = "3iCu3qu04WxT15ncY1UPd_5BDzabh2MvX1CenF1jQq8"
+//private const val CLIENT_ID = "3iCu3qu04WxT15ncY1UPd_5BDzabh2MvX1CenF1jQq8"
 
 
 val gson = GsonBuilder()
